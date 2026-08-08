@@ -17,10 +17,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 
+enum class MasterScreens { InsertNick, RecordPoint }
 
 @Composable
 fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
-    var nome by remember { mutableStateOf("") }
+    var currentMasterScreen by remember { mutableStateOf(MasterScreens.InsertNick) }
+    when (currentMasterScreen) {
+        MasterScreens.InsertNick -> InsertNick(modifier, onBackClick, onNameConfirmed = {
+            currentMasterScreen =
+                MasterScreens.RecordPoint
+        })
+
+        MasterScreens.RecordPoint -> MasterRecordScreen()
+    }
+}
+
+//TODO sistemare due colonne che sono concettualemente sbagliate
+@Composable
+fun InsertNick(modifier: Modifier, onBackClick: () -> Unit, onNameConfirmed: (String) -> Unit) {
+    var masterNickname by remember { mutableStateOf("") }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
@@ -37,14 +52,15 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Row {
-            Text("Inserisci il nome della partita")
+            Text("Inserisci il nome del Master")
         }
         Row {
             TextField(
-                value = nome, { nome = it },
+                value = masterNickname,
+                onValueChange = { masterNickname = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
         }
-        Button({}, content = { Text("Avanti") })
+        Button({ onNameConfirmed(masterNickname) }, content = { Text("Avanti") })
     }
 }
