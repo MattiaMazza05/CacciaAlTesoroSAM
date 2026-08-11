@@ -38,7 +38,10 @@ class MainActivity : ComponentActivity() {
                             onMasterClick = { currentScreen = Screen.Master },
                             onPlayerClick = { currentScreen = Screen.Player })
 
-                        Screen.Master -> MasterScreen(modifier = Modifier.padding(innerPadding),  onBackClick = {currentScreen = Screen.Hello})
+                        Screen.Master -> MasterScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            onBackClick = { currentScreen = Screen.Hello })
+
                         Screen.Player -> PlayerScreen(modifier = Modifier.padding(innerPadding))
                     }
                 }
