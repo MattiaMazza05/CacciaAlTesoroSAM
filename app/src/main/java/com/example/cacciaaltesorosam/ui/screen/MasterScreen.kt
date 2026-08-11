@@ -1,11 +1,13 @@
 package com.example.cacciaaltesorosam.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,35 +34,32 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     }
 }
 
-//TODO sistemare due colonne che sono concettualemente sbagliate
+
 @Composable
 fun InsertNick(modifier: Modifier, onBackClick: () -> Unit, onNameConfirmed: (String) -> Unit) {
     var masterNickname by remember { mutableStateOf("") }
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Button(
-            onBackClick,
-            content = { Text("indietro") })
-    }
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Row {
-            Text("Inserisci il nome del Master")
+
+    Box(modifier.fillMaxSize()) {
+        ElevatedButton(onBackClick, modifier = Modifier.align(Alignment.TopStart)) {
+            Text("Indietro")
         }
-        Row {
-            TextField(
-                value = masterNickname,
-                onValueChange = { masterNickname = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-            )
+        Column(
+            modifier = modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row {
+                Text("Inserisci il nome del Master")
+            }
+            Row {
+                TextField(
+                    value = masterNickname,
+                    onValueChange = { masterNickname = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                )
+            }
+            Button({ onNameConfirmed(masterNickname) }, content = { Text("Avanti") })
         }
-        Button({ onNameConfirmed(masterNickname) }, content = { Text("Avanti") })
     }
 }
