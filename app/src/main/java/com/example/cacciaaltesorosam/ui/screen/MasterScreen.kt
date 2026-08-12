@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.cacciaaltesorosam.R
 
 enum class MasterScreens { InsertNick, RecordPoint }
 
@@ -34,14 +38,18 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     }
 }
 
-
 @Composable
 fun InsertNick(modifier: Modifier, onBackClick: () -> Unit, onNameConfirmed: (String) -> Unit) {
     var masterNickname by remember { mutableStateOf("") }
 
     Box(modifier.fillMaxSize()) {
-        ElevatedButton(onBackClick, modifier = Modifier.align(Alignment.TopStart)) {
-            Text("Indietro")
+        IconButton(
+            onClick = onBackClick, modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.outline_arrow_back_24),
+                contentDescription = "Torna indietro"
+            )
         }
         Column(
             modifier = modifier
@@ -53,7 +61,7 @@ fun InsertNick(modifier: Modifier, onBackClick: () -> Unit, onNameConfirmed: (St
                 Text("Inserisci il nome del Master")
             }
             Row {
-                TextField(
+                OutlinedTextField(
                     value = masterNickname,
                     onValueChange = { masterNickname = it },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
