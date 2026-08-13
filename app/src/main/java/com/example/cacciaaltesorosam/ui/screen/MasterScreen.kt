@@ -1,5 +1,6 @@
 package com.example.cacciaaltesorosam.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,21 +21,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.cacciaaltesorosam.R
+import com.example.cacciaaltesorosam.data.PuntoTemp
 
 enum class MasterScreens { InsertNick, RecordPoint }
 
 @Composable
 fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     var currentMasterScreen by remember { mutableStateOf(MasterScreens.InsertNick) }
+    var punti by remember { mutableStateOf(listOf<PuntoTemp>()) }
     when (currentMasterScreen) {
         MasterScreens.InsertNick -> InsertNick(modifier, onBackClick, onNameConfirmed = {
             currentMasterScreen =
                 MasterScreens.RecordPoint
         })
 
-        MasterScreens.RecordPoint -> MasterRecordScreen()
+        MasterScreens.RecordPoint -> MasterRecordScreen(onPointConfirmed = { nuovoPunto ->
+            punti = punti + nuovoPunto
+            if (nuovoPunto.isTreasure) {
+                Log.d("MASTER", "Caccia completata con ${punti.size} punti")
+            }
+        })
     }
 }
 
