@@ -6,10 +6,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
+import com.example.cacciaaltesorosam.PixelFont
 import com.example.cacciaaltesorosam.R
 import com.example.cacciaaltesorosam.media.playback.AndroidAudioPlayer
 import com.example.cacciaaltesorosam.media.record.AndroidAudioRecorder
@@ -33,6 +35,7 @@ fun MasterRecordScreen(modifier: Modifier = Modifier) {
     val player = remember { AndroidAudioPlayer(context) }
     var isRecording by remember { mutableStateOf(false) }
     var audioFile by remember { mutableStateOf<File?>(null) }
+    var checked by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -50,7 +53,7 @@ fun MasterRecordScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     )
     {
-        IconButton(onClick = {
+        LargeFloatingActionButton(onClick = {
             if (isRecording) {
                 recorder.stop()
                 isRecording = false
@@ -68,21 +71,46 @@ fun MasterRecordScreen(modifier: Modifier = Modifier) {
             }
         }) {
             Icon(
-                painter = if (isRecording) painterResource(R.drawable.outline_stop_circle_24) else painterResource(
-                    R.drawable.outline_add_circle_24
+                painter = if (isRecording) painterResource(R.drawable.baseline_stop_24) else painterResource(
+                    R.drawable.twotone_mic_24
                 ),
                 contentDescription = if (isRecording) "Stop recording" else "Start recording"
             )
         }
-        Button(onClick = {
-            player.playFile(audioFile ?: return@Button)
-        }) {
-            Text(text = "Riproduci")
+
+        LargeFloatingActionButton(
+            onClick = {
+                player.playFile(audioFile ?: return@LargeFloatingActionButton)
+            }
+        ) {
+            Icon(
+                painter = painterResource(
+                    R.drawable.round_play_arrow_24
+                ),
+                "Start playing"
+            )
         }
-        Button(onClick = {
-            player.stop()
-        }) {
-            Text(text = "Pausa")
+
+        LargeFloatingActionButton(
+            onClick = {
+                player.stop()
+            }
+        ) {
+            Icon(
+                painter = painterResource(
+                    R.drawable.round_pause_24
+                ),
+                "Stop playing"
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Tesoro", fontFamily = PixelFont)
+            Checkbox(
+                checked = checked,
+                onCheckedChange = { checked = it }
+            )
         }
     }
 }

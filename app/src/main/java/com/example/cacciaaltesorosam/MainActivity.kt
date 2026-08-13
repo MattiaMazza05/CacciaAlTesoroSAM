@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,11 +21,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import com.example.cacciaaltesorosam.ui.screen.MasterScreen
 import com.example.cacciaaltesorosam.ui.screen.PlayerScreen
 import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 
 enum class Screen { Hello, Master, Player }
+
+val PixelFont = FontFamily(
+    Font(R.font.press_start_2p)
+)
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,16 +74,51 @@ fun hello(
         verticalArrangement = Arrangement.Center
     ) {
         Row {
-            Text("Benvenuto!")
+            Text("Benvenuto!", fontFamily = PixelFont)
+
         }
-        Row { Text("Seleziona il tuo ruolo per iniziare") }
+        Row { Text("Seleziona il tuo ruolo per iniziare", fontFamily = PixelFont) }
         Button(
-            onClick = onMasterClick,
-            content = { Text("Master") }
-        )
+            onClick = onPlayerClick
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(4.dp)
+            ) {
+                // Immagine sopra
+                Image(
+                    painter = painterResource(id = R.drawable.master),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp), // Leggermente più grande se sta sopra
+                )
+                // Testo sotto
+                Text(
+                    text = "Player",
+                    fontFamily = PixelFont
+                )
+            }
+        }
         Button(
-            onClick = onPlayerClick,
-            content = { Text("Player") }
-        )
+            onClick = onMasterClick
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(4.dp)
+            ) {
+                // Immagine sopra
+                Image(
+                    painter = painterResource(id = R.drawable.master),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp), // Leggermente più grande se sta sopra
+                )
+                // Testo sotto
+                Text(
+                    text = "Master",
+                    fontFamily = PixelFont
+                )
+            }
+        }
     }
 }
