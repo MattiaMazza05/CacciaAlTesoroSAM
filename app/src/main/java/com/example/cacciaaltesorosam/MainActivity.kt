@@ -4,14 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,14 +22,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.cacciaaltesorosam.ui.screen.HistoricalScreen
 import com.example.cacciaaltesorosam.ui.screen.MasterScreen
+import com.example.cacciaaltesorosam.ui.screen.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.PlayerScreen
 import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
+import com.example.cacciaaltesorosam.ui.theme.PixelBorder
+import com.example.cacciaaltesorosam.ui.theme.PixelPanel
 import com.example.cacciaaltesorosam.ui.theme.PixelYellow
+import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 
-enum class Screen { Hello, Master, Player }
+enum class Screen { Hello, Master, Player, Historical }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,13 +48,19 @@ class MainActivity : ComponentActivity() {
                         Screen.Hello -> hello(
                             modifier = Modifier.padding(innerPadding),
                             onMasterClick = { currentScreen = Screen.Master },
-                            onPlayerClick = { currentScreen = Screen.Player })
+                            onPlayerClick = { currentScreen = Screen.Player },
+                            onHistoricalClick = { currentScreen = Screen.Historical })
 
                         Screen.Master -> MasterScreen(
                             modifier = Modifier.padding(innerPadding),
                             onBackClick = { currentScreen = Screen.Hello })
 
                         Screen.Player -> PlayerScreen(modifier = Modifier.padding(innerPadding))
+                        Screen.Historical -> HistoricalScreen(
+                            modifier = Modifier.padding(
+                                innerPadding
+                            )
+                        )
                     }
                 }
             }
@@ -61,7 +72,8 @@ class MainActivity : ComponentActivity() {
 fun hello(
     modifier: Modifier,
     onMasterClick: () -> Unit,
-    onPlayerClick: () -> Unit
+    onPlayerClick: () -> Unit,
+    onHistoricalClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -76,47 +88,28 @@ fun hello(
                 color = PixelYellow
             )
         }
-        Button(
-            onClick = onPlayerClick,
-            modifier = Modifier.padding(top = 32.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(4.dp)
-            ) {
-                // Immagine sopra
-                Image(
-                    painter = painterResource(id = R.drawable.player),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp), // Leggermente più grande se sta sopra
-                )
-                // Testo sotto
-                Text(
-                    text = "Player"
-                )
-            }
-        }
-        Button(
+        Spacer(Modifier.heightIn(40.dp))
+        PixelButton(
+            text = "CREA PARTITA",
             onClick = onMasterClick,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(4.dp)
-            ) {
-                // Immagine sopra
-                Image(
-                    painter = painterResource(id = R.drawable.master),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp), // Leggermente più grande se sta sopra
-                )
-                // Testo sotto
-                Text(
-                    text = "Master"
-                )
-            }
-        }
+            backgroundColor = PixelYellow,
+            shadowColor = PixelYellowShadow
+        )
+        Spacer(Modifier.heightIn(14.dp))
+        PixelButton(
+            text = "LE MIE PARTITE",
+            onClick = onHistoricalClick,
+            backgroundColor = PixelPanel,
+            textColor = Color.White,
+            shadowColor = PixelBorder
+        )
+        Spacer(Modifier.height(14.dp))
+        PixelButton(
+            text = "UNISCITI A UNA PARTITA",
+            onClick = onPlayerClick,
+            backgroundColor = PixelPanel,
+            textColor = Color.White,
+            shadowColor = PixelBorder
+        )
     }
 }
