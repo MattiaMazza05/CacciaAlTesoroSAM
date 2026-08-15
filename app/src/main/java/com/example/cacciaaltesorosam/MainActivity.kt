@@ -24,10 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.cacciaaltesorosam.ui.screen.HistoricalScreen
-import com.example.cacciaaltesorosam.ui.screen.MasterScreen
-import com.example.cacciaaltesorosam.ui.screen.PixelButton
-import com.example.cacciaaltesorosam.ui.screen.PlayerScreen
+import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.screen.master.HistoricalScreen
+import com.example.cacciaaltesorosam.ui.screen.master.MasterScreen
+import com.example.cacciaaltesorosam.ui.screen.player.PlayerScreen
 import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelPanel

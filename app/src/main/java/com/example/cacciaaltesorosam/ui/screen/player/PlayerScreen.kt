@@ -1,4 +1,4 @@
-package com.example.cacciaaltesorosam.ui.screen
+package com.example.cacciaaltesorosam.ui.screen.player
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

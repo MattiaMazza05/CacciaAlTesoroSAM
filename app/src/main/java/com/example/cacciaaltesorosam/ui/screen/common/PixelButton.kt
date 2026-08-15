@@ -1,4 +1,4 @@
-package com.example.cacciaaltesorosam.ui.screen
+package com.example.cacciaaltesorosam.ui.screen.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

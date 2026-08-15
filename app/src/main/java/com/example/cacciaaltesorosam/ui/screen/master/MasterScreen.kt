@@ -1,4 +1,4 @@
-package com.example.cacciaaltesorosam.ui.screen
+package com.example.cacciaaltesorosam.ui.screen.master
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
