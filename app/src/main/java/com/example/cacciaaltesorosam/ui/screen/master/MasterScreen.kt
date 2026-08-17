@@ -36,12 +36,14 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
                 MasterScreens.RecordPoint
         })
 
-        MasterScreens.RecordPoint -> MasterRecordScreen(onPointConfirmed = { nuovoPunto ->
-            punti = punti + nuovoPunto
-            if (nuovoPunto.isTreasure) {
-                Log.d("MASTER", "Caccia completata con ${punti.size} punti")
-            }
-        })
+        MasterScreens.RecordPoint -> MasterRecordScreen(
+            pointNumber = punti.size + 1,
+            onPointConfirmed = { nuovoPunto ->
+                punti = punti + nuovoPunto
+                if (nuovoPunto.isTreasure) {
+                    Log.d("MASTER", "Caccia completata con ${punti.size} punti")
+                }
+            })
     }
 }
 

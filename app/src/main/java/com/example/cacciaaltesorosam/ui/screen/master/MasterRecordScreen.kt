@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +29,8 @@ import com.example.cacciaaltesorosam.data.PuntoTemp
 import com.example.cacciaaltesorosam.media.playback.AndroidAudioPlayer
 import com.example.cacciaaltesorosam.media.record.AndroidAudioRecorder
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.screen.common.locationUpdate
+import com.example.cacciaaltesorosam.ui.screen.common.rememberMasterLocation
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
@@ -39,20 +42,36 @@ import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 import java.io.File
 
 @Composable
-fun MasterRecordScreen(modifier: Modifier = Modifier, onPointConfirmed: (PuntoTemp) -> Unit) {
+fun MasterRecordScreen(
+    modifier: Modifier = Modifier,
+    onPointConfirmed: (PuntoTemp) -> Unit,
+    pointNumber: Int
+) {
     val context = LocalContext.current
     val recorder = remember { AndroidAudioRecorder(context) }
     val player = remember { AndroidAudioPlayer(context) }
     var isRecording by remember { mutableStateOf(false) }
     var audioFile by remember { mutableStateOf<File?>(null) }
     var checked by remember { mutableStateOf(false) }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val hasPermission = ContextCompat.checkSelfPermission(
+        context, Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    val currentLocationState = rememberMasterLocation(context)
+    val currentLocation = currentLocationState.value
+    val confirmButton = audioFile != null && currentLocation != null
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             audioFile = recorder.start()
             isRecording = true
+        }
+    }
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            locationUpdate()
         }
     }
 
@@ -63,6 +82,37 @@ fun MasterRecordScreen(modifier: Modifier = Modifier, onPointConfirmed: (PuntoTe
         verticalArrangement = Arrangement.Center
     )
     {
+        Text(
+            "CREAZIONE CACCIA IN CORSO",
+            style = MaterialTheme.typography.titleLarge
+        )
+        Row {
+            Text("PUNTO N: ")
+            Text("${pointNumber}", color = PixelGreen)
+        }
+        Row {
+            Text("INDIZIO AUDIO: ")
+            if (audioFile == null) {
+                Text("NON PRONTO", color = PixelRed)
+            } else {
+                Text("Pronto", color = PixelGreen)
+            }
+        }
+        Row {
+            Text("POSIZIONE: ")
+            Text("lat: ")
+            if (currentLocation?.latitude == null) {
+                Text("NULL", color = PixelRed)
+            } else {
+                Text("${currentLocation.latitude}", color = PixelGreen)
+            }
+            Text("long: ")
+            if (currentLocation?.longitude == null) {
+                Text("NULL", color = PixelRed)
+            } else {
+                Text("${currentLocation.longitude}", color = PixelGreen)
+            }
+        }
         PixelButton(
             text = if (isRecording) "STOP" else "REGISTRA",
             onClick = {
@@ -78,7 +128,7 @@ fun MasterRecordScreen(modifier: Modifier = Modifier, onPointConfirmed: (PuntoTe
                         audioFile = recorder.start()
                         isRecording = true
                     } else {
-                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                     }
                 }
             },
@@ -110,6 +160,24 @@ fun MasterRecordScreen(modifier: Modifier = Modifier, onPointConfirmed: (PuntoTe
                 shadowColor = PixelBorder
             )
         }
+        Spacer(Modifier.width(14.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            PixelButton(
+                text = "FISSA POSIZIONE",
+                onClick = {
+                    if (hasPermission) {
+                        locationUpdate()
+                    } else {
+                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                },
+                backgroundColor = PixelPanel,
+                shadowColor = PixelBorder,
+                textColor = Color.White
+            )
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -123,28 +191,22 @@ fun MasterRecordScreen(modifier: Modifier = Modifier, onPointConfirmed: (PuntoTe
             verticalAlignment = Alignment.CenterVertically
         ) {
             PixelButton(
-                text = "CONFERMA PUNTO",
+                text = "SALVA E VAI AL PROSSIMO",
+                enabled = confirmButton,
                 onClick = {
-                    val hasPermission = ContextCompat.checkSelfPermission(
-                        context, Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-
-                    if (hasPermission) {
-                        //posizione
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                    }
-
+                    val loc = currentLocation ?: return@PixelButton
                     val punto = PuntoTemp(
                         audioPath = audioFile!!.absolutePath,
-                        isTreasure = checked
+                        isTreasure = checked,
+                        latitude = loc.latitude,
+                        longitude = loc.longitude
                     )
 
                     onPointConfirmed(punto)
-
                     audioFile = null
                     isRecording = false
                     checked = false
+                    currentLocationState.value = null
                 },
                 backgroundColor = PixelYellow,
                 shadowColor = PixelYellowShadow

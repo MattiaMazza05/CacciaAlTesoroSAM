@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -22,7 +23,8 @@ fun PixelButton(
     backgroundColor: Color,
     shadowColor: Color,
     textColor: Color = Color.Black,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val shadowOffset = 5.dp
     Box(
@@ -36,8 +38,9 @@ fun PixelButton(
                 )
             }
             .background(backgroundColor)
-            .clickable(onClick = onClick)
-            .padding(14.dp),
+            .clickable(enabled = enabled) { onClick() }
+            .padding(14.dp)
+            .alpha(if (enabled) 1f else 0.5f),
         contentAlignment = Alignment.Center
     ) {
         Text(text, color = textColor, fontFamily = PressStart2P, fontSize = 10.sp)
