@@ -26,7 +26,7 @@ fun locationUpdate() {
             LocationRequest.create().apply {
                 interval = TimeUnit.SECONDS.toMillis(60)
                 fastestInterval = TimeUnit.SECONDS.toMillis(30)
-                maxWaitTime = TimeUnit.SECONDS.toMillis(60)
+                maxWaitTime = TimeUnit.MINUTES.toMillis(2)
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }
         locProvider.requestLocationUpdates(
@@ -55,8 +55,11 @@ fun rememberMasterLocation(context: Context): MutableState<Coordinate?> {
             override fun onLocationResult(result: LocationResult) {
                 val loc = result.locations.firstOrNull()
                 if (loc != null) {
-                    currentLoc.value = Coordinate(loc.latitude, loc.longitude)
-                    stopLocationUpdate()
+                    val ageMills = System.currentTimeMillis() - loc.time
+                    if (ageMills < 10_000) {
+                        currentLoc.value = Coordinate(loc.latitude, loc.longitude)
+                        stopLocationUpdate()
+                    }
                 }
             }
         }

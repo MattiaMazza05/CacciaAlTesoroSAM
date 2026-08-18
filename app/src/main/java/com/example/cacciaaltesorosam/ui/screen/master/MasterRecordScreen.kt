@@ -191,7 +191,7 @@ fun MasterRecordScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             PixelButton(
-                text = "SALVA E VAI AL PROSSIMO",
+                text = if (checked) "CONCLUDI E SALVA" else "SALVA E VAI AL PROSSIMO",
                 enabled = confirmButton,
                 onClick = {
                     val loc = currentLocation ?: return@PixelButton
@@ -208,8 +208,8 @@ fun MasterRecordScreen(
                     checked = false
                     currentLocationState.value = null
                 },
-                backgroundColor = PixelYellow,
-                shadowColor = PixelYellowShadow
+                backgroundColor = if (checked) PixelGreen else PixelYellow,
+                shadowColor = if (checked) PixelGreenShadow else PixelYellowShadow
             )
         }
     }
