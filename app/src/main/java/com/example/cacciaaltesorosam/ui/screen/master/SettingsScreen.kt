@@ -29,18 +29,25 @@ import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 fun SettingScreen(
     modifier: Modifier,
     onBackClick: () -> Unit,
-    onSettingConfirmed: (String, Int) -> Unit
+    onSettingConfirmed: (String, Int, String) -> Unit
 ) {
     var gameName by remember { mutableStateOf("") }
     var isClicked by remember { mutableStateOf(0) }
     var gameDuration by remember { mutableStateOf(0) }
+    var masterNick by remember { mutableStateOf("") }
     Column(modifier = modifier.fillMaxSize()) {
         PixelTopBar(title = "NUOVA CACCIA", onBackClick = onBackClick)
         Spacer(modifier.height(20.dp))
-        Text("NOME")
+        Text("NOME CACCIA")
         OutlinedTextField(
             value = gameName,
             onValueChange = { gameName = it },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        )
+        Text("NOME MASTER")
+        OutlinedTextField(
+            value = masterNick,
+            onValueChange = { masterNick = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
         )
         Text("SCEGLI DURATA CACCIA")
@@ -79,7 +86,9 @@ fun SettingScreen(
         Spacer(modifier = Modifier.weight(1f))
         PixelButton(
             text = "INIZIA A MAPPARE",
-            onClick = { onSettingConfirmed(gameName, gameDuration) },
+            onClick = {
+                onSettingConfirmed(gameName, gameDuration, masterNick)
+            },
             backgroundColor = PixelYellow,
             shadowColor = PixelYellowShadow,
             modifier = Modifier

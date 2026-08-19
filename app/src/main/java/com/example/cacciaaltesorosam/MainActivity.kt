@@ -59,7 +59,8 @@ class MainActivity : ComponentActivity() {
                         Screen.Historical -> HistoricalScreen(
                             modifier = Modifier.padding(
                                 innerPadding
-                            )
+                            ),
+                            onBackClick = { currentScreen = Screen.Hello }
                         )
                     }
                 }

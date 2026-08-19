@@ -7,10 +7,11 @@ import androidx.room3.PrimaryKey
 
 @Entity(tableName = "caccia")
 data class GameEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "master_nick") val masterNick: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "nome_caccia") val gameName: String,
-    @ColumnInfo(name = "data") val date: Long = System.currentTimeMillis()
+    @ColumnInfo(name = "data") val date: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "durata") val duration: Int,
+    @ColumnInfo(name = "nome_master") val masterNick: String
 )
 
 
@@ -31,5 +32,5 @@ data class LocationEntity(
     @ColumnInfo(name = "latitude") val latitude: Double,
     @ColumnInfo(name = "longitude") val longitude: Double,
     @ColumnInfo(name = "tesoro") val isTreasure: Boolean,
-    @ColumnInfo(name = "game_id") val gameId: Int
+    @ColumnInfo(name = "game_id") val gameId: Long
 )

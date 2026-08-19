@@ -1,6 +1,6 @@
 package com.example.cacciaaltesorosam.data
 
-data class PuntoTemp(
+data class PuntoCaccia(
     val audioPath: String,
     val isTreasure: Boolean,
     val latitude: Double,

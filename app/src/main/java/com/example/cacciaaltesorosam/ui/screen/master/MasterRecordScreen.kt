@@ -25,10 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.example.cacciaaltesorosam.data.PuntoTemp
+import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.media.playback.AndroidAudioPlayer
 import com.example.cacciaaltesorosam.media.record.AndroidAudioRecorder
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.screen.common.PixelTopBar
 import com.example.cacciaaltesorosam.ui.screen.common.locationUpdate
 import com.example.cacciaaltesorosam.ui.screen.common.rememberMasterLocation
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
@@ -44,8 +45,9 @@ import java.io.File
 @Composable
 fun MasterRecordScreen(
     modifier: Modifier = Modifier,
-    onPointConfirmed: (PuntoTemp) -> Unit,
-    pointNumber: Int
+    onPointConfirmed: (PuntoCaccia) -> Unit,
+    pointNumber: Int,
+    onMasterBackClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val recorder = remember { AndroidAudioRecorder(context) }
@@ -82,6 +84,7 @@ fun MasterRecordScreen(
         verticalArrangement = Arrangement.Center
     )
     {
+        PixelTopBar(title = "CREA PUNTI E INDIZI", onBackClick = onMasterBackClick)
         Text(
             "CREAZIONE CACCIA IN CORSO",
             style = MaterialTheme.typography.titleLarge
@@ -195,13 +198,12 @@ fun MasterRecordScreen(
                 enabled = confirmButton,
                 onClick = {
                     val loc = currentLocation ?: return@PixelButton
-                    val punto = PuntoTemp(
+                    val punto = PuntoCaccia(
                         audioPath = audioFile!!.absolutePath,
                         isTreasure = checked,
                         latitude = loc.latitude,
                         longitude = loc.longitude
                     )
-
                     onPointConfirmed(punto)
                     audioFile = null
                     isRecording = false
