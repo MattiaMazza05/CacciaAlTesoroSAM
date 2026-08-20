@@ -47,9 +47,9 @@ fun SendGammeViaBluetooth(modifier: Modifier) {
                     BluetoothDevice.ACTION_FOUND -> {
                         val device: BluetoothDevice? =
                             intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                        dispositiviCompatibili =
-                            (dispositiviCompatibili + device?.name) as List<String>
-                        foundDevices = (foundDevices + device) as List<BluetoothDevice>
+                        if (device != null && foundDevices.none { it.address == device.address }) {
+                            foundDevices = foundDevices + device
+                        }
                     }
                 }
             }
