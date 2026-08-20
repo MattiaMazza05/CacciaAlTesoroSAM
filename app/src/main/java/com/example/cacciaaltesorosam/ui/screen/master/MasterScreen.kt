@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.cacciaaltesorosam.data.PuntoCaccia
 
-enum class MasterScreens { GameSettings, RecordPoint, Summary }
+enum class MasterScreens { GameSettings, RecordPoint, Summary, SendGame }
 
 @Composable
 fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
@@ -49,7 +49,10 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
             modifier, punti = punti, gameName = gameName,
             duration = gameDuration,
             masterNick = masterNick,
-            onBackClick
+            onBackClick,
+            onSendClick = { currentMasterScreen = MasterScreens.SendGame }
         )
+
+        MasterScreens.SendGame -> sendGammeViaBluetooth()
     }
 }

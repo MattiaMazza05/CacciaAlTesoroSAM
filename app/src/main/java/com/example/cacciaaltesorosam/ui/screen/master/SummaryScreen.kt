@@ -33,7 +33,8 @@ fun SummaryScreen(
     gameName: String,
     duration: Int,
     masterNick: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSendClick: () -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         val context = LocalContext.current
@@ -52,7 +53,10 @@ fun SummaryScreen(
         Row {
             PixelButton(
                 text = "SALVA E INIZIA",
-                onClick = { saveGame(context, punti, gameName, duration, masterNick) },
+                onClick = {
+                    saveGame(context, punti, gameName, duration, masterNick)
+                    onSendClick()
+                },
                 backgroundColor = PixelGreen,
                 shadowColor = PixelGreenShadow,
             )
