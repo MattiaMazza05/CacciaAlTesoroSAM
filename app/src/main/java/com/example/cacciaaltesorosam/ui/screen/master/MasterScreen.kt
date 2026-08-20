@@ -53,6 +53,6 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
             onSendClick = { currentMasterScreen = MasterScreens.SendGame }
         )
 
-        MasterScreens.SendGame -> sendGammeViaBluetooth()
+        MasterScreens.SendGame -> SendGammeViaBluetooth(modifier)
     }
 }
