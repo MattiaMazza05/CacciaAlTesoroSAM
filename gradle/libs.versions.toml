@@ -13,6 +13,7 @@ room3CommonJvm = "3.0.1"
 room3Runtime = "3.0.1"
 appcompat = "1.7.1"
 playServicesLocation = "21.4.0"
+locationbuttonCompose = "1.0.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", ver
 androidx-room3-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room3Runtime" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-locationbutton-compose = { group = "androidx.core.locationbutton", name = "locationbutton-compose", version.ref = "locationbuttonCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

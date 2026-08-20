@@ -25,13 +25,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.cacciaaltesorosam.data.Coordinate
 import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.media.playback.AndroidAudioPlayer
 import com.example.cacciaaltesorosam.media.record.AndroidAudioRecorder
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.common.PixelTopBar
-import com.example.cacciaaltesorosam.ui.screen.common.locationUpdate
-import com.example.cacciaaltesorosam.ui.screen.common.rememberMasterLocation
+import com.example.cacciaaltesorosam.ui.screen.common.rememberLocationTracker
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
@@ -49,18 +49,21 @@ fun MasterRecordScreen(
     pointNumber: Int,
     onMasterBackClick: () -> Unit,
 ) {
+
     val context = LocalContext.current
+    val tracker = rememberLocationTracker()
     val recorder = remember { AndroidAudioRecorder(context) }
     val player = remember { AndroidAudioPlayer(context) }
+
     var isRecording by remember { mutableStateOf(false) }
     var audioFile by remember { mutableStateOf<File?>(null) }
     var checked by remember { mutableStateOf(false) }
-    val hasPermission = ContextCompat.checkSelfPermission(
-        context, Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    val currentLocationState = rememberMasterLocation(context)
-    val currentLocation = currentLocationState.value
-    val confirmButton = audioFile != null && currentLocation != null
+
+    var masterCoord by remember { mutableStateOf<Coordinate?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    val confirmButton = audioFile != null && masterCoord != null
+
     val audioPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -69,11 +72,21 @@ fun MasterRecordScreen(
             isRecording = true
         }
     }
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            locationUpdate()
+            isLoading = true
+            tracker.getMasterLocation(
+                onSuccess = { coord ->
+                    masterCoord = coord
+                    isLoading = false
+                },
+                onError = {
+                    isLoading = false
+                }
+            )
         }
     }
 
@@ -104,16 +117,23 @@ fun MasterRecordScreen(
         Row {
             Text("POSIZIONE: ")
             Text("lat: ")
-            if (currentLocation?.latitude == null) {
+            if (isLoading) {
+                Text("CARICAMENTO", color = PixelYellow)
+            } else if (masterCoord?.latitude == null) {
                 Text("NULL", color = PixelRed)
             } else {
-                Text("${currentLocation.latitude}", color = PixelGreen)
+                Text("${masterCoord?.latitude}", color = PixelGreen)
             }
+
+            Spacer(Modifier.width(8.dp))
+
             Text("long: ")
-            if (currentLocation?.longitude == null) {
+            if (isLoading) {
+                Text("CARICAMENTO", color = PixelYellow)
+            } else if (masterCoord?.longitude == null) {
                 Text("NULL", color = PixelRed)
             } else {
-                Text("${currentLocation.longitude}", color = PixelGreen)
+                Text("${masterCoord?.longitude}", color = PixelGreen)
             }
         }
         PixelButton(
@@ -164,14 +184,28 @@ fun MasterRecordScreen(
             )
         }
         Spacer(Modifier.width(14.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
             PixelButton(
                 text = "FISSA POSIZIONE",
                 onClick = {
-                    if (hasPermission) {
-                        locationUpdate()
+                    val hasLocPermission = ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                    if (hasLocPermission) {
+                        isLoading = true
+                        tracker.getMasterLocation(
+                            onSuccess = { coord ->
+                                masterCoord = coord
+                                isLoading = false
+                            },
+                            onError = {
+                                isLoading = false
+                            }
+                        )
                     } else {
                         locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
@@ -197,9 +231,10 @@ fun MasterRecordScreen(
                 text = if (checked) "CONCLUDI E SALVA" else "SALVA E VAI AL PROSSIMO",
                 enabled = confirmButton,
                 onClick = {
-                    val loc = currentLocation ?: return@PixelButton
+                    val loc = masterCoord ?: return@PixelButton
+                    val audio = audioFile ?: return@PixelButton
                     val punto = PuntoCaccia(
-                        audioPath = audioFile!!.absolutePath,
+                        audioPath = audio.absolutePath,
                         isTreasure = checked,
                         latitude = loc.latitude,
                         longitude = loc.longitude
@@ -208,7 +243,7 @@ fun MasterRecordScreen(
                     audioFile = null
                     isRecording = false
                     checked = false
-                    currentLocationState.value = null
+                    masterCoord = null
                 },
                 backgroundColor = if (checked) PixelGreen else PixelYellow,
                 shadowColor = if (checked) PixelGreenShadow else PixelYellowShadow
