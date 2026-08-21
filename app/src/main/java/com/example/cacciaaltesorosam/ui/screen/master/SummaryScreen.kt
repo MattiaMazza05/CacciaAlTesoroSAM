@@ -87,7 +87,8 @@ fun saveGame(
             GameEntity(
                 gameName = gameName,
                 duration = duration,
-                masterNick = masterNick
+                masterNick = masterNick,
+                pointNumber = punti.size
             )
         )
         for (punto in punti) {
@@ -104,6 +105,7 @@ fun saveGame(
         val giochiSalvati = dao.getAllGames()
         Log.d("DB_TEST", giochiSalvati.toString())
         val puntiSalvati = dao.getLocationsForGame(gameid)
+        val numeroPunti = dao.getLocationsForGame(gameid).size
         Log.d("DB_LOCATION_TEST", puntiSalvati.toString())
     }
 }
