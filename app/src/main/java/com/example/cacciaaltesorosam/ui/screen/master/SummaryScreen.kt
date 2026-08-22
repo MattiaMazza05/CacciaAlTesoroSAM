@@ -25,6 +25,8 @@ import com.example.cacciaaltesorosam.ui.theme.PixelPanel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
 fun SummaryScreen(
@@ -34,10 +36,30 @@ fun SummaryScreen(
     duration: Int,
     masterNick: String,
     onBackClick: () -> Unit,
-    onSendClick: () -> Unit
+    onSendClick: (ByteArray) -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         val context = LocalContext.current
+        val jsonObject = JSONObject().apply {
+            put("gameName", gameName)
+            put("duration", duration)
+            put("masterNick", masterNick)
+
+            val puntiArray = JSONArray()
+            punti.forEachIndexed { index, punto ->
+                val puntoJson = JSONObject().apply {
+                    put("audioIndex", index)
+                    put("isTreasure", punto.isTreasure)
+                    put("latitude", punto.latitude)
+                    put("longitude", punto.longitude)
+                }
+                puntiArray.put(puntoJson)
+            }
+            put("points", puntiArray)
+        }
+
+        val jsonString = jsonObject.toString()
+        val gameBytes = jsonString.toByteArray()
         Text("CACCIA COMPLETA", style = MaterialTheme.typography.titleLarge)
         Text("${punti.size} tappe")
 
@@ -55,7 +77,7 @@ fun SummaryScreen(
                 text = "SALVA E INIZIA",
                 onClick = {
                     saveGame(context, punti, gameName, duration, masterNick)
-                    onSendClick()
+                    onSendClick(gameBytes)
                 },
                 backgroundColor = PixelGreen,
                 shadowColor = PixelGreenShadow,
@@ -105,7 +127,6 @@ fun saveGame(
         val giochiSalvati = dao.getAllGames()
         Log.d("DB_TEST", giochiSalvati.toString())
         val puntiSalvati = dao.getLocationsForGame(gameid)
-        val numeroPunti = dao.getLocationsForGame(gameid).size
         Log.d("DB_LOCATION_TEST", puntiSalvati.toString())
     }
 }

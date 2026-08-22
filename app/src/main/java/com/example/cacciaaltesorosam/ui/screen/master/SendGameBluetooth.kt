@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,12 +34,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.io.OutputStream
 import java.util.UUID
 
 
 @SuppressLint("MissingPermission")
 @Composable
-fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String) {
+fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: ByteArray?) {
     val bta = BluetoothAdapter.getDefaultAdapter()
     var foundDevices by remember { mutableStateOf(listOf<BluetoothDevice>()) }
     val context = LocalContext.current
@@ -75,22 +74,11 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String) {
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier.height(30.dp))
-        LazyColumn {
-            items(foundDevices) { device ->
-                PixelButton(
-                    text = device.name ?: device.address,
-                    onClick = {
-                        pairConnectionBluetooth(masterNick, bta)
-                    },
-                    backgroundColor = PixelPanel,
-                    shadowColor = PixelBorder,
-                    textColor = Color.White
-                )
-            }
-        }
         PixelButton(
-            text = "ASPETTA CONNESSIONI (MASTER)",
-            onClick = { pairConnectionBluetooth(masterNick, bta) },
+            text = "ATTENDI PLAYER",
+            onClick = {
+                pairConnectionBluetooth(masterNick, bta, gameByte)
+            },
             backgroundColor = PixelPanel,
             shadowColor = PixelBorder,
             textColor = Color.White
@@ -98,8 +86,9 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String) {
     }
 }
 
+
 @SuppressLint("MissingPermission")
-fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter) {
+fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter, gameByte: ByteArray?) {
     val masterUUID: UUID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
     val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
         bta.listenUsingRfcommWithServiceRecord("Master: ${masterNick}", masterUUID)
@@ -115,10 +104,22 @@ fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter) {
                 null
             }
             socket?.also {
-                Log.d("CONNECTED", "CONNESSIONE AVVENUTAA")
+                gameByte?.let { bytes -> sendGame(it, bytes) }
             }
         }
     }
 }
 
+
+fun sendGame(mmSocket: BluetoothSocket, game: ByteArray) {
+    val mmOutStream: OutputStream = mmSocket.outputStream
+
+    try {
+        mmOutStream.write(game)
+        mmOutStream.flush()
+    } catch (e: IOException) {
+        Log.e(TAG, "ERRORE", e)
+    }
+
+}
 
