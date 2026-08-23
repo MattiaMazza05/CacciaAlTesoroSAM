@@ -11,7 +11,8 @@ data class GameEntity(
     @ColumnInfo(name = "nome_caccia") val gameName: String,
     @ColumnInfo(name = "data") val date: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "durata") val duration: Int,
-    @ColumnInfo(name = "nome_master") val masterNick: String
+    @ColumnInfo(name = "nome_master") val masterNick: String,
+    @ColumnInfo(name = "num_punti") val pointNumber: Int
 )
 
 

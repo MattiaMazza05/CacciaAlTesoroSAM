@@ -16,14 +16,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.master.HistoricalScreen
 import com.example.cacciaaltesorosam.ui.screen.master.MasterScreen
@@ -34,34 +33,39 @@ import com.example.cacciaaltesorosam.ui.theme.PixelPanel
 import com.example.cacciaaltesorosam.ui.theme.PixelYellow
 import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 
-enum class Screen { Hello, Master, Player, Historical }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var currentScreen by remember { mutableStateOf(Screen.Hello) }
             CacciaAlTesoroSAMTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    when (currentScreen) {
-                        Screen.Hello -> hello(
-                            modifier = Modifier.padding(innerPadding),
-                            onMasterClick = { currentScreen = Screen.Master },
-                            onPlayerClick = { currentScreen = Screen.Player },
-                            onHistoricalClick = { currentScreen = Screen.Historical })
 
-                        Screen.Master -> MasterScreen(
-                            modifier = Modifier.padding(innerPadding),
-                            onBackClick = { currentScreen = Screen.Hello })
-
-                        Screen.Player -> PlayerScreen(modifier = Modifier.padding(innerPadding))
-                        Screen.Historical -> HistoricalScreen(
-                            modifier = Modifier.padding(
-                                innerPadding
-                            ),
-                            onBackClick = { currentScreen = Screen.Hello }
-                        )
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "home") {
+                        composable("home") {
+                            hello(
+                                modifier = Modifier.padding(innerPadding),
+                                onMasterClick = { navController.navigate("master") },
+                                onPlayerClick = { navController.navigate("player") },
+                                onHistoricalClick = { navController.navigate("historical") }
+                            )
+                        }
+                        composable("master") {
+                            MasterScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onBackClick = { navController.popBackStack() })
+                        }
+                        composable("player") {
+                            PlayerScreen(modifier = Modifier.padding(innerPadding))
+                        }
+                        composable("historical") {
+                            HistoricalScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onBackClick = { navController.navigate("home") }
+                            )
+                        }
                     }
                 }
             }
