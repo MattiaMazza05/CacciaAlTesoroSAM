@@ -38,6 +38,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.UUID
 
+val GAME_SERVICE_UUID: UUID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -99,7 +100,7 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: Byte
 
 @SuppressLint("MissingPermission")
 fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter, gameByte: ByteArray?) {
-    val masterUUID: UUID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
+    val masterUUID: UUID = GAME_SERVICE_UUID
     val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
         bta.listenUsingRfcommWithServiceRecord("Master: ${masterNick}", masterUUID)
     }

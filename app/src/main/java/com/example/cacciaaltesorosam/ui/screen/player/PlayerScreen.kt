@@ -36,8 +36,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.screen.master.GAME_SERVICE_UUID
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelPanel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 
 @SuppressLint("MissingPermission")
@@ -56,13 +61,25 @@ fun PlayerScreen(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
+    var hasConnectPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context, Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
     val bluetoothPermission = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted -> hasScanPermission = isGranted }
-
+    val bluetoothConnectPermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted -> hasConnectPermission = isGranted }
     LaunchedEffect(Unit) {
         if (!hasScanPermission) {
             bluetoothPermission.launch(Manifest.permission.BLUETOOTH_SCAN)
+        }
+        if (!hasConnectPermission) {
+            bluetoothConnectPermission.launch(Manifest.permission.BLUETOOTH_CONNECT)
         }
     }
     DisposableEffect(hasScanPermission) {
@@ -112,6 +129,23 @@ fun PlayerScreen(
                 PixelButton(
                     text = device.name ?: device.address,
                     onClick = {
+                        if (hasConnectPermission) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                bta.cancelDiscovery()
+                                try {
+                                    val socket =
+                                        device.createRfcommSocketToServiceRecord(GAME_SERVICE_UUID)
+                                    socket.connect()
+                                    val inputStream = socket.inputStream
+                                    val buffer = ByteArray(1024)
+                                    val numByteLetti = inputStream.read(buffer)
+                                    val jsonRicevuto = String(buffer, 0, numByteLetti)
+                                    Log.d("BLUETOOTH_RECEIVE", jsonRicevuto)
+                                } catch (e: IOException) {
+                                    Log.e("BLUETOOTH_RECEIVE", "Connessione fallita", e)
+                                }
+                            }
+                        }
                     },
                     backgroundColor = PixelPanel,
                     shadowColor = PixelBorder,
