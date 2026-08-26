@@ -68,18 +68,21 @@ fun PlayerScreen(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
-    val bluetoothPermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted -> hasScanPermission = isGranted }
-    val bluetoothConnectPermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted -> hasConnectPermission = isGranted }
+    val permissionsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { results: Map<String, Boolean> ->
+        hasScanPermission = results[Manifest.permission.BLUETOOTH_SCAN] ?: false
+        hasConnectPermission = results[Manifest.permission.BLUETOOTH_CONNECT] ?: false
+    }
+
     LaunchedEffect(Unit) {
-        if (!hasScanPermission) {
-            bluetoothPermission.launch(Manifest.permission.BLUETOOTH_SCAN)
-        }
-        if (!hasConnectPermission) {
-            bluetoothConnectPermission.launch(Manifest.permission.BLUETOOTH_CONNECT)
+        if (!hasScanPermission || !hasConnectPermission) {
+            permissionsLauncher.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                )
+            )
         }
     }
     DisposableEffect(hasScanPermission) {

@@ -22,20 +22,31 @@ import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.common.PixelTopBar
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelPanel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
 fun HistoricalScreen(
     modifier: Modifier,
-    onBackClick: () -> Unit
-) {
+    onBackClick: () -> Unit,
+
+    ) {
     val context = LocalContext.current
     var archivio by remember { mutableStateOf(listOf<GameEntity>()) }
+    var gameBytes by remember { mutableStateOf<ByteArray?>(null) }
+    var selectedMasterNick by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         val dao = AppDatabase.getDatabase(context).dao()
         archivio = dao.getAllGames()
     }
-
+    if (gameBytes != null) {
+        SendGammeViaBluetooth(modifier, selectedMasterNick, gameBytes)
+        return
+    }
     Column(
         modifier = modifier
             .fillMaxSize(),
@@ -50,7 +61,33 @@ fun HistoricalScreen(
                 Column {
                     PixelButton(
                         text = "Nome:${game.gameName} Durata: ${game.duration} min  Punti: ${game.pointNumber}",
-                        onClick = {},
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val dao = AppDatabase.getDatabase(context).dao()
+                                val punti = dao.getLocationsForGame(game.id)
+                                val jsonObject = JSONObject().apply {
+                                    put("gameName", game.gameName)
+                                    put("duration", game.duration)
+                                    put("masterNisck", game.masterNick)
+
+                                    val puntiArray = JSONArray()
+                                    punti.forEachIndexed { index, punto ->
+                                        val puntoJson = JSONObject().apply {
+                                            put("audioIndex", index)
+                                            put("isTreasure", punto.isTreasure)
+                                            put("latitude", punto.latitude)
+                                            put("longitude", punto.longitude)
+                                        }
+                                        puntiArray.put(puntoJson)
+                                    }
+                                    put("points", puntiArray)
+
+                                }
+                                selectedMasterNick = game.masterNick
+                                gameBytes = jsonObject.toString().toByteArray()
+
+                            }
+                        },
                         backgroundColor = PixelPanel,
                         shadowColor = PixelBorder,
                         textColor = Color.White

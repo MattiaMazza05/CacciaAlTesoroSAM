@@ -79,16 +79,16 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: Byte
         PixelButton(
             text = "ATTENDI PLAYER",
             onClick = {
-                val discoverableIntent =
-                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
-                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120)
-                    }
-                discoverableLauncher.launch(discoverableIntent)
                 if (hasConnectPermission) {
                     pairConnectionBluetooth(masterNick, bta, gameByte)
                 } else {
                     connectPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
                 }
+                val discoverableIntent =
+                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
+                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120)
+                    }
+                discoverableLauncher.launch(discoverableIntent)
             },
             backgroundColor = PixelPanel,
             shadowColor = PixelBorder,
@@ -100,6 +100,7 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: Byte
 
 @SuppressLint("MissingPermission")
 fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter, gameByte: ByteArray?) {
+    Log.d("BLUETOOTH_MASTER", "pairConnectionBluetooth chiamata")
     val masterUUID: UUID = GAME_SERVICE_UUID
     val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
         bta.listenUsingRfcommWithServiceRecord("Master: ${masterNick}", masterUUID)
@@ -107,6 +108,7 @@ fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter, gameByte:
     CoroutineScope(Dispatchers.IO).launch {
         var loop = true
         while (loop) {
+            Log.d("BLUETOOTH_MASTER", "In attesa su accept()...")
             val socket: BluetoothSocket? = try {
                 mmServerSocket?.accept()
             } catch (e: IOException) {
