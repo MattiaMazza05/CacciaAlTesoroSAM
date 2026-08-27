@@ -23,9 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cacciaaltesorosam.data.Game
+import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.master.HistoricalScreen
 import com.example.cacciaaltesorosam.ui.screen.master.MasterScreen
+import com.example.cacciaaltesorosam.ui.screen.player.InGame
 import com.example.cacciaaltesorosam.ui.screen.player.PlayerScreen
 import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
@@ -41,7 +44,31 @@ class MainActivity : ComponentActivity() {
         setContent {
             CacciaAlTesoroSAMTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+                    val demoGame = Game(
+                        gameName = "Caccia di Prova",
+                        duration = 10,
+                        masterNick = "Mattia",
+                        punti = listOf(
+                            PuntoCaccia(
+                                audioPath = "0",
+                                isTreasure = false,
+                                latitude = 43.7228,
+                                longitude = 10.4017
+                            ),
+                            PuntoCaccia(
+                                audioPath = "1",
+                                isTreasure = false,
+                                latitude = 43.7235,
+                                longitude = 10.4025
+                            ),
+                            PuntoCaccia(
+                                audioPath = "2",
+                                isTreasure = true,
+                                latitude = 43.7241,
+                                longitude = 10.4030
+                            )
+                        )
+                    )
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "home") {
                         composable("home") {
@@ -49,7 +76,8 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onMasterClick = { navController.navigate("master") },
                                 onPlayerClick = { navController.navigate("player") },
-                                onHistoricalClick = { navController.navigate("historical") }
+                                onHistoricalClick = { navController.navigate("historical") },
+                                onDemoClick = { navController.navigate("playerDemo") }
                             )
                         }
                         composable("master") {
@@ -66,6 +94,9 @@ class MainActivity : ComponentActivity() {
                                 onBackClick = { navController.navigate("home") }
                             )
                         }
+                        composable("playerDemo") {
+                            InGame(modifier = Modifier.padding(innerPadding), demoGame)
+                        }
                     }
                 }
             }
@@ -78,7 +109,8 @@ fun hello(
     modifier: Modifier,
     onMasterClick: () -> Unit,
     onPlayerClick: () -> Unit,
-    onHistoricalClick: () -> Unit
+    onHistoricalClick: () -> Unit,
+    onDemoClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -112,6 +144,14 @@ fun hello(
         PixelButton(
             text = "UNISCITI A UNA PARTITA",
             onClick = onPlayerClick,
+            backgroundColor = PixelPanel,
+            textColor = Color.White,
+            shadowColor = PixelBorder
+        )
+        Spacer(Modifier.height(14.dp))
+        PixelButton(
+            text = "PARTITA DEMO",
+            onClick = onDemoClick,
             backgroundColor = PixelPanel,
             textColor = Color.White,
             shadowColor = PixelBorder
