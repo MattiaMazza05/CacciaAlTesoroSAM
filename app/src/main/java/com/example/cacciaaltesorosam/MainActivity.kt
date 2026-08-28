@@ -52,20 +52,20 @@ class MainActivity : ComponentActivity() {
                             PuntoCaccia(
                                 audioPath = "0",
                                 isTreasure = false,
-                                latitude = 43.7228,
-                                longitude = 10.4017
+                                latitude = 36.9181535,
+                                longitude = 14.6912477
                             ),
                             PuntoCaccia(
                                 audioPath = "1",
                                 isTreasure = false,
-                                latitude = 43.7235,
-                                longitude = 10.4025
+                                latitude = 36.9181535,
+                                longitude = 14.6912477
                             ),
                             PuntoCaccia(
                                 audioPath = "2",
                                 isTreasure = true,
-                                latitude = 43.7241,
-                                longitude = 10.4030
+                                latitude = 36.9181535,
+                                longitude = 14.6912477
                             )
                         )
                     )
