@@ -7,9 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.example.cacciaaltesorosam.data.Game
 
-enum class PlayerScreens { DeviceList, PlayerCustomization, InGame }
+enum class PlayerScreens { DeviceList, PlayerCustomization, InGame, GameEnd }
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -18,6 +19,9 @@ fun PlayerScreen(
 ) {
     var currentPlayerScreen by remember { mutableStateOf(PlayerScreens.DeviceList) }
     var giocoRicevuto by remember { mutableStateOf<Game?>(null) }
+    var nomePlayer by remember { mutableStateOf("") }
+    var colorePlayer by remember { mutableStateOf(Color.White) }
+    var tempoTrascorso by remember { mutableStateOf(0) }
     when (currentPlayerScreen) {
         PlayerScreens.DeviceList -> DeviceList(modifier, onSelectClick = { gioco ->
             giocoRicevuto = gioco
@@ -32,7 +36,9 @@ fun PlayerScreen(
                     modifier,
                     durata = gioco.duration,
                     gioco.gameName,
-                    onStartclick = {
+                    onStartclick = { nome, colore ->
+                        nomePlayer = nome
+                        colorePlayer = colore
                         currentPlayerScreen =
                             PlayerScreens.InGame
                     })
@@ -42,8 +48,25 @@ fun PlayerScreen(
         PlayerScreens.InGame -> {
             val gioco = giocoRicevuto
             if (gioco != null) {
-                InGame(modifier, gioco)
+                InGame(
+                    modifier,
+                    gioco,
+                    onBackClick = { currentPlayerScreen = PlayerScreens.DeviceList },
+                    onEndClick = { tempo ->
+                        tempoTrascorso = tempo
+                        currentPlayerScreen = PlayerScreens.GameEnd
+                    }
+                )
             }
+        }
+
+        PlayerScreens.GameEnd -> {
+            GameEnd(
+                modifier,
+                nomePlayer = nomePlayer,
+                colorePlayer = colorePlayer,
+                tempoTrascorso = tempoTrascorso
+            )
         }
     }
 }

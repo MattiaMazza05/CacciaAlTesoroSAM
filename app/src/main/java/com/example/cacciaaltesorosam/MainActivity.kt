@@ -52,20 +52,20 @@ class MainActivity : ComponentActivity() {
                             PuntoCaccia(
                                 audioPath = "0",
                                 isTreasure = false,
-                                latitude = 36.9181535,
-                                longitude = 14.6912477
+                                latitude = 43.7102122,
+                                longitude = 10.3876207
                             ),
                             PuntoCaccia(
                                 audioPath = "1",
                                 isTreasure = false,
-                                latitude = 36.9181535,
-                                longitude = 14.6912477
+                                latitude = 43.7102122,
+                                longitude = 10.3876207
                             ),
                             PuntoCaccia(
                                 audioPath = "2",
                                 isTreasure = true,
-                                latitude = 36.9181535,
-                                longitude = 14.6912477
+                                latitude = 43.7102122,
+                                longitude = 10.3876207
                             )
                         )
                     )
@@ -95,7 +95,11 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("playerDemo") {
-                            InGame(modifier = Modifier.padding(innerPadding), demoGame)
+                            InGame(
+                                modifier = Modifier.padding(innerPadding),
+                                demoGame,
+                                onBackClick = { navController.navigate("home") },
+                                onEndClick = { navController.navigate("home") })
                         }
                     }
                 }

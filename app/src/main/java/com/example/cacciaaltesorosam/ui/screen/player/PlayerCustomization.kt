@@ -25,6 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.theme.PixelBlue
+import com.example.cacciaaltesorosam.ui.theme.PixelGreen
+import com.example.cacciaaltesorosam.ui.theme.PixelRed
+import com.example.cacciaaltesorosam.ui.theme.PixelViolet
 import com.example.cacciaaltesorosam.ui.theme.PixelYellow
 import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 
@@ -33,14 +37,15 @@ fun PlayerCustomization(
     modifier: Modifier,
     durata: Int,
     gameName: String,
-    onStartclick: () -> Unit
+    onStartclick: (String, Color) -> Unit
 ) {
     var playerName by remember { mutableStateOf("") }
     val coloriDisponibili = listOf(
-        Color(0xFFE53935), // rosso
-        Color(0xFF43A047), // verde
-        Color(0xFF1E88E5), // blu
-        Color(0xFFFDD835)  // giallo
+        PixelRed,
+        PixelGreen,
+        PixelBlue,
+        PixelYellow,
+        PixelViolet
     )
     var coloreScelto by remember { mutableStateOf(coloriDisponibili.first()) }
 
@@ -71,7 +76,7 @@ fun PlayerCustomization(
         Spacer(modifier.height(20.dp))
         PixelButton(
             "SALVA E INIZIA",
-            onClick = { onStartclick() },
+            onClick = { onStartclick(playerName, coloreScelto) },
             backgroundColor = PixelYellow,
             shadowColor = PixelYellowShadow
         )

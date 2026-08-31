@@ -58,11 +58,15 @@ fun stopLocationUpdate() {
 fun getPlayerLocation(context: Context): Coordinate {
     locProvider = LocationServices.getFusedLocationProviderClient(context)
     var currentLoc by remember { mutableStateOf(Coordinate(0.0, 0.0)) }
-    DisposableEffect(locProvider) {
+    DisposableEffect(Unit) {
         locCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 for (loc in result.locations) {
                     currentLoc = Coordinate(loc.latitude, loc.longitude)
+                    Log.d(
+                        "LOCATION_DEBUG",
+                        "Rilevato: ${loc.latitude}, ${loc.longitude} (accuratezza: ${loc.accuracy}m)"
+                    )
                 }
             }
         }

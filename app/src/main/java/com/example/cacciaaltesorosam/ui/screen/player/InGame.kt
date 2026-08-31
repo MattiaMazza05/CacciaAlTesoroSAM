@@ -7,14 +7,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -33,18 +39,23 @@ import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.location.getPlayerLocation
 import com.example.cacciaaltesorosam.ui.screen.common.GameTopBar
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.theme.PixelBlue
+import com.example.cacciaaltesorosam.ui.theme.PixelBlueShadow
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
+import com.example.cacciaaltesorosam.ui.theme.PixelViolet
+import com.example.cacciaaltesorosam.ui.theme.PixelVioletShadow
 import com.example.cacciaaltesorosam.ui.theme.PixelYellow
 import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun InGame(modifier: Modifier, game: Game) {
+fun InGame(modifier: Modifier, game: Game, onBackClick: () -> Unit, onEndClick: (Int) -> Unit) {
     var tappaAttuale by remember { mutableStateOf(1) }
     var secondiRimanenti by remember { mutableStateOf(game.duration * 60) }
     var nextButton by remember { mutableStateOf(false) }
+    var mostraDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (secondiRimanenti > 0) {
@@ -55,11 +66,23 @@ fun InGame(modifier: Modifier, game: Game) {
     val minuti = secondiRimanenti / 60
     val secondi = secondiRimanenti % 60
     val tempoRimanete = "%02d:%02d".format(minuti, secondi)
+    val secondiTotali = game.duration * 60
+    val tempoTrascorso = secondiTotali - secondiRimanenti
     val puntoCorrente = game.punti[tappaAttuale - 1]
 
     getPlayerLocation(LocalContext.current)
+    val posizioneAttuale = getPlayerLocation(LocalContext.current)
+
+    val risultati = FloatArray(1)
+    Location.distanceBetween(
+        posizioneAttuale.latitude, posizioneAttuale.longitude,
+        puntoCorrente.latitude, puntoCorrente.longitude,
+        risultati
+    )
+    Log.d("PROXIMITY_DEBUG", "Distanza reale dal punto: ${risultati[0]} metri")
 
     val distanzaStato = calcolaDistanza(puntoCorrente)
+
 
     LaunchedEffect(distanzaStato) {
         if (distanzaStato == DistanzaStato.PUNTO_TROVATO || distanzaStato == DistanzaStato.TESORO_TROVATO) {
@@ -67,12 +90,31 @@ fun InGame(modifier: Modifier, game: Game) {
         }
     }
 
+    if (mostraDialog) {
+        AlertDialog(
+            onDismissRequest = { mostraDialog = false },
+            title = { Text("VUOI ABBANDONARE?") },
+            text = { Text("Se abbandoni perderai tutti i progressi") },
+            confirmButton = {
+                TextButton(onClick = {
+                    mostraDialog = false
+                    onBackClick()
+                }) {
+                    Text("ABBANDONA")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostraDialog = false }) { Text("ANNULLA") }
+            }
+        )
+    }
+
     Column(modifier.fillMaxSize()) {
         GameTopBar(
             tappaAttuale,
             game.punti.size,
             tempoRimanete,
-            {}
+            { mostraDialog = true }
         )
         Column(
             modifier = Modifier
@@ -81,6 +123,17 @@ fun InGame(modifier: Modifier, game: Game) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Row {
+                when (distanzaStato) {
+                    DistanzaStato.LONTANO -> Text("SEI LONTANO", color = PixelBlue)
+                    DistanzaStato.VICINO -> Text("SEI VICINO", color = PixelGreen)
+                    DistanzaStato.PUNTO_TROVATO -> Text("HAI TROVATO IL PUNTO", color = PixelYellow)
+                    DistanzaStato.TESORO_TROVATO -> Text(
+                        "HAI TROVATO IL TESORO",
+                        color = PixelViolet
+                    )
+                }
+            }
             DistanzaAnimazione(distanzaStato)
             PixelButton(
                 text = "RIPRODUCI INDIZIO",
@@ -88,18 +141,38 @@ fun InGame(modifier: Modifier, game: Game) {
                 backgroundColor = PixelGreen,
                 shadowColor = PixelGreenShadow
             )
+            PixelButton(
+                text = "DEBUG: SALTA A FINE PARTITA",
+                onClick = { onEndClick(tempoTrascorso) },
+                backgroundColor = PixelViolet,
+                shadowColor = PixelVioletShadow
+            )
         }
         PixelButton(
-            "VAI AL PROSSIMO",
+            if (distanzaStato == DistanzaStato.TESORO_TROVATO) "CONCLUDI PARTITA" else "VAI AL PROSSIMO INDIZIO",
             enabled = nextButton,
             onClick = {
                 if (tappaAttuale < game.punti.size) {
                     tappaAttuale++
                     nextButton = false
                 }
+                if (distanzaStato == DistanzaStato.TESORO_TROVATO) {
+                    onEndClick(tempoTrascorso)
+                }
             },
-            backgroundColor = PixelYellow,
-            shadowColor = PixelYellowShadow,
+            backgroundColor =
+                when (distanzaStato) {
+                    DistanzaStato.LONTANO -> PixelBlue
+                    DistanzaStato.VICINO -> PixelGreen
+                    DistanzaStato.PUNTO_TROVATO -> PixelYellow
+                    DistanzaStato.TESORO_TROVATO -> PixelViolet
+                },
+            shadowColor = when (distanzaStato) {
+                DistanzaStato.LONTANO -> PixelBlueShadow
+                DistanzaStato.VICINO -> PixelGreenShadow
+                DistanzaStato.PUNTO_TROVATO -> PixelYellowShadow
+                DistanzaStato.TESORO_TROVATO -> PixelVioletShadow
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -128,10 +201,19 @@ fun calcolaDistanza(puntoCorrente: PuntoCaccia): DistanzaStato {
     val receiver = remember(puntoCorrente) {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
+                Log.d(
+                    "PROXIMITY_DEBUG",
+                    "Ricevuto broadcast: action=${intent?.action}, entering=${
+                        intent?.getBooleanExtra(
+                            LocationManager.KEY_PROXIMITY_ENTERING,
+                            false
+                        )
+                    }"
+                )
                 val dentroArea =
                     intent?.getBooleanExtra(LocationManager.KEY_PROXIMITY_ENTERING, false) ?: false
                 if (dentroArea) {
-                    when (intent?.action) {
+                    when (intent.action) {
                         actionVicino -> if (distanzaStato == DistanzaStato.LONTANO) distanzaStato =
                             DistanzaStato.VICINO
 
@@ -180,10 +262,20 @@ fun calcolaDistanza(puntoCorrente: PuntoCaccia): DistanzaStato {
         )
 
         try {
-            lm.addProximityAlert(puntoCorrente.latitude, puntoCorrente.longitude, 10f, -1, piVicino)
-            lm.addProximityAlert(puntoCorrente.latitude, puntoCorrente.longitude, 3f, -1, piTrovato)
+            lm.addProximityAlert(puntoCorrente.latitude, puntoCorrente.longitude, 50f, -1, piVicino)
+            lm.addProximityAlert(
+                puntoCorrente.latitude,
+                puntoCorrente.longitude,
+                35f,
+                -1,
+                piTrovato
+            )
+            Log.d(
+                "PROXIMITY_DEBUG",
+                "Alert registrati per punto ${puntoCorrente.latitude},${puntoCorrente.longitude}"
+            )
         } catch (e: SecurityException) {
-
+            Log.e("PROXIMITY_DEBUG", "Registrazione alert fallita", e)
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
