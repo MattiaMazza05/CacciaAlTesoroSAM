@@ -18,7 +18,8 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     var gameName by remember { mutableStateOf("") }
     var gameDuration by remember { mutableStateOf(0) }
     var masterNick by remember { mutableStateOf("") }
-    var gameByte by remember { mutableStateOf<ByteArray?>(null) }
+    var gameJSON by remember { mutableStateOf("") }
+    var audioPaths by remember { mutableStateOf(listOf<String>()) }
     when (currentMasterScreen) {
         MasterScreens.GameSettings -> SettingScreen(
             modifier,
@@ -51,12 +52,13 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
             duration = gameDuration,
             masterNick = masterNick,
             onBackClick,
-            onSendClick = { bytes ->
-                gameByte = bytes
+            onSendClick = { string, paths ->
+                gameJSON = string
+                audioPaths = paths
                 currentMasterScreen = MasterScreens.SendGame
             }
         )
 
-        MasterScreens.SendGame -> SendGammeViaBluetooth(modifier, masterNick, gameByte)
+        MasterScreens.SendGame -> SendGammeViaBluetooth(modifier, masterNick, gameJSON, audioPaths)
     }
 }

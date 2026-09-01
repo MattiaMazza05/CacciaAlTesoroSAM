@@ -36,7 +36,7 @@ fun SummaryScreen(
     duration: Int,
     masterNick: String,
     onBackClick: () -> Unit,
-    onSendClick: (ByteArray) -> Unit
+    onSendClick: (String, List<String>) -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         val context = LocalContext.current
@@ -58,8 +58,7 @@ fun SummaryScreen(
             put("points", puntiArray)
         }
 
-        val jsonString = jsonObject.toString()
-        val gameBytes = jsonString.toByteArray()
+        val gameJSON = jsonObject.toString()
         Text("CACCIA COMPLETA", style = MaterialTheme.typography.titleLarge)
         Text("${punti.size} tappe")
 
@@ -77,7 +76,7 @@ fun SummaryScreen(
                 text = "SALVA E INIZIA",
                 onClick = {
                     saveGame(context, punti, gameName, duration, masterNick)
-                    onSendClick(gameBytes)
+                    onSendClick(gameJSON, punti.map { it.audioPath })
                 },
                 backgroundColor = PixelGreen,
                 shadowColor = PixelGreenShadow,

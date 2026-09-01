@@ -32,19 +32,19 @@ import org.json.JSONObject
 fun HistoricalScreen(
     modifier: Modifier,
     onBackClick: () -> Unit,
-
-    ) {
+) {
     val context = LocalContext.current
     var archivio by remember { mutableStateOf(listOf<GameEntity>()) }
-    var gameBytes by remember { mutableStateOf<ByteArray?>(null) }
+    var gameJSON by remember { mutableStateOf<String?>(null) }
     var selectedMasterNick by remember { mutableStateOf("") }
+    var audioPaths by remember { mutableStateOf(listOf<String>()) }
 
     LaunchedEffect(Unit) {
         val dao = AppDatabase.getDatabase(context).dao()
         archivio = dao.getAllGames()
     }
-    if (gameBytes != null) {
-        SendGammeViaBluetooth(modifier, selectedMasterNick, gameBytes)
+    if (gameJSON != null) {
+        SendGammeViaBluetooth(modifier, selectedMasterNick, gameJSON, audioPaths)
         return
     }
     Column(
@@ -65,10 +65,12 @@ fun HistoricalScreen(
                             CoroutineScope(Dispatchers.IO).launch {
                                 val dao = AppDatabase.getDatabase(context).dao()
                                 val punti = dao.getLocationsForGame(game.id)
+                                audioPaths = punti.map { it.audioTrack }
+
                                 val jsonObject = JSONObject().apply {
                                     put("gameName", game.gameName)
                                     put("duration", game.duration)
-                                    put("masterNisck", game.masterNick)
+                                    put("masterNick", game.masterNick)
 
                                     val puntiArray = JSONArray()
                                     punti.forEachIndexed { index, punto ->
@@ -84,7 +86,7 @@ fun HistoricalScreen(
 
                                 }
                                 selectedMasterNick = game.masterNick
-                                gameBytes = jsonObject.toString().toByteArray()
+                                gameJSON = jsonObject.toString()
 
                             }
                         },

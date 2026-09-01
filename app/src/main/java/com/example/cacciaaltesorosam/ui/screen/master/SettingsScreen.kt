@@ -53,6 +53,16 @@ fun SettingScreen(
         Text("SCEGLI DURATA CACCIA")
         Row {
             PixelButton(
+                text = "TEST",
+                onClick = {
+                    gameDuration = 1
+                    isClicked = 0
+                },
+                backgroundColor = if (isClicked == 1) PixelYellow else PixelPanel,
+                textColor = if (isClicked == 1) Color.Black else Color.White,
+                shadowColor = if (isClicked == 1) PixelYellowShadow else PixelBorder
+            )
+            PixelButton(
                 text = "30m",
                 onClick = {
                     gameDuration = 30

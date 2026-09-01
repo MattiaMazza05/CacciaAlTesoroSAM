@@ -34,15 +34,21 @@ import com.example.cacciaaltesorosam.ui.theme.PixelPanel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.DataOutputStream
+import java.io.File
 import java.io.IOException
-import java.io.OutputStream
 import java.util.UUID
 
 val GAME_SERVICE_UUID: UUID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
 
 @SuppressLint("MissingPermission")
 @Composable
-fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: ByteArray?) {
+fun SendGammeViaBluetooth(
+    modifier: Modifier,
+    masterNick: String,
+    gameJSON: String?,
+    audioPaths: List<String>
+) {
     val bta = BluetoothAdapter.getDefaultAdapter()
     val context = LocalContext.current
     var hasConnectPermission by remember {
@@ -57,7 +63,7 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: Byte
     ) { isGaranted ->
         hasConnectPermission = isGaranted
         if (isGaranted) {
-            pairConnectionBluetooth(masterNick, bta, gameByte)
+            pairConnectionBluetooth(masterNick, bta, gameJSON, audioPaths)
         }
     }
     LaunchedEffect(Unit) {
@@ -80,7 +86,7 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: Byte
             text = "ATTENDI PLAYER",
             onClick = {
                 if (hasConnectPermission) {
-                    pairConnectionBluetooth(masterNick, bta, gameByte)
+                    pairConnectionBluetooth(masterNick, bta, gameJSON, audioPaths)
                 } else {
                     connectPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
                 }
@@ -99,7 +105,12 @@ fun SendGammeViaBluetooth(modifier: Modifier, masterNick: String, gameByte: Byte
 
 
 @SuppressLint("MissingPermission")
-fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter, gameByte: ByteArray?) {
+fun pairConnectionBluetooth(
+    masterNick: String,
+    bta: BluetoothAdapter,
+    gameJSON: String?,
+    audioPaths: List<String>
+) {
     Log.d("BLUETOOTH_MASTER", "pairConnectionBluetooth chiamata")
     val masterUUID: UUID = GAME_SERVICE_UUID
     val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
@@ -117,19 +128,24 @@ fun pairConnectionBluetooth(masterNick: String, bta: BluetoothAdapter, gameByte:
                 null
             }
             socket?.also {
-                gameByte?.let { bytes -> sendGame(it, bytes) }
+                gameJSON?.let { string -> sendGame(it, string, audioPaths) }
             }
         }
     }
 }
 
 
-fun sendGame(mmSocket: BluetoothSocket, game: ByteArray) {
-    val mmOutStream: OutputStream = mmSocket.outputStream
+fun sendGame(mmSocket: BluetoothSocket, gameJSON: String, audioPaths: List<String>) {
+    val dataOut = DataOutputStream(mmSocket.outputStream)
 
     try {
-        mmOutStream.write(game)
-        mmOutStream.flush()
+        dataOut.writeUTF(gameJSON)
+        audioPaths.forEach {
+            val bytes = File(it).readBytes()
+            dataOut.writeInt(bytes.size)
+            dataOut.write(bytes)
+        }
+        dataOut.flush()
     } catch (e: IOException) {
         Log.e(TAG, "ERRORE", e)
     }

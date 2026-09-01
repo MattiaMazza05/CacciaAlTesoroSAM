@@ -15,9 +15,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,31 +39,44 @@ import com.example.cacciaaltesorosam.data.DistanzaStato
 import com.example.cacciaaltesorosam.data.Game
 import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.location.getPlayerLocation
+import com.example.cacciaaltesorosam.media.playback.AndroidAudioPlayer
 import com.example.cacciaaltesorosam.ui.screen.common.GameTopBar
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.theme.PixelBlue
 import com.example.cacciaaltesorosam.ui.theme.PixelBlueShadow
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
+import com.example.cacciaaltesorosam.ui.theme.PixelRed
+import com.example.cacciaaltesorosam.ui.theme.PixelRedShadow
 import com.example.cacciaaltesorosam.ui.theme.PixelViolet
 import com.example.cacciaaltesorosam.ui.theme.PixelVioletShadow
 import com.example.cacciaaltesorosam.ui.theme.PixelYellow
 import com.example.cacciaaltesorosam.ui.theme.PixelYellowShadow
 import kotlinx.coroutines.delay
+import java.io.File
 
 
 @Composable
-fun InGame(modifier: Modifier, game: Game, onBackClick: () -> Unit, onEndClick: (Int) -> Unit) {
+fun InGame(
+    modifier: Modifier,
+    game: Game,
+    onBackClick: () -> Unit,
+    onEndClick: (Int, Boolean) -> Unit
+) {
     var tappaAttuale by remember { mutableStateOf(1) }
     var secondiRimanenti by remember { mutableStateOf(game.duration * 60) }
     var nextButton by remember { mutableStateOf(false) }
     var mostraDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val player = remember { AndroidAudioPlayer(context) }
+    var partitaConclusa by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (secondiRimanenti > 0) {
             delay(1000)
             secondiRimanenti--
         }
+        partitaConclusa = true
     }
     val minuti = secondiRimanenti / 60
     val secondi = secondiRimanenti % 60
@@ -87,6 +102,11 @@ fun InGame(modifier: Modifier, game: Game, onBackClick: () -> Unit, onEndClick: 
     LaunchedEffect(distanzaStato) {
         if (distanzaStato == DistanzaStato.PUNTO_TROVATO || distanzaStato == DistanzaStato.TESORO_TROVATO) {
             nextButton = true
+        }
+    }
+    LaunchedEffect(partitaConclusa) {
+        if (partitaConclusa) {
+            onEndClick(tempoTrascorso, partitaConclusa)
         }
     }
 
@@ -135,15 +155,27 @@ fun InGame(modifier: Modifier, game: Game, onBackClick: () -> Unit, onEndClick: 
                 }
             }
             DistanzaAnimazione(distanzaStato)
-            PixelButton(
-                text = "RIPRODUCI INDIZIO",
-                onClick = {},
-                backgroundColor = PixelGreen,
-                shadowColor = PixelGreenShadow
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PixelButton(
+                    text = "RIPRODUCI INDIZIO",
+                    onClick = { player.playFile(File(puntoCorrente.audioPath)) },
+                    backgroundColor = PixelGreen,
+                    shadowColor = PixelGreenShadow
+                )
+                Spacer(Modifier.width(14.dp))
+                PixelButton(
+                    text = "STOP",
+                    onClick = {
+                        player.stop()
+                    },
+                    backgroundColor = PixelRed,
+                    shadowColor = PixelRedShadow
+                )
+            }
+
             PixelButton(
                 text = "DEBUG: SALTA A FINE PARTITA",
-                onClick = { onEndClick(tempoTrascorso) },
+                onClick = { onEndClick(tempoTrascorso, partitaConclusa) },
                 backgroundColor = PixelViolet,
                 shadowColor = PixelVioletShadow
             )
@@ -157,7 +189,7 @@ fun InGame(modifier: Modifier, game: Game, onBackClick: () -> Unit, onEndClick: 
                     nextButton = false
                 }
                 if (distanzaStato == DistanzaStato.TESORO_TROVATO) {
-                    onEndClick(tempoTrascorso)
+                    onEndClick(tempoTrascorso, partitaConclusa)
                 }
             },
             backgroundColor =
@@ -290,6 +322,7 @@ fun calcolaDistanza(puntoCorrente: PuntoCaccia): DistanzaStato {
                 lm.removeProximityAlert(piTrovato)
                 context.unregisterReceiver(receiver)
             } catch (e: Exception) {
+                Log.e("ON_DISPOSE_ERRORE", "Errore in rimozione", e)
             }
         }
     }

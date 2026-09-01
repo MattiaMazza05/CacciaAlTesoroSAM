@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val demoGame = Game(
                         gameName = "Caccia di Prova",
-                        duration = 10,
+                        duration = 1,
                         masterNick = "Mattia",
                         punti = listOf(
                             PuntoCaccia(
@@ -86,7 +86,9 @@ class MainActivity : ComponentActivity() {
                                 onBackClick = { navController.popBackStack() })
                         }
                         composable("player") {
-                            PlayerScreen(modifier = Modifier.padding(innerPadding))
+                            PlayerScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onHomeClick = { navController.navigate("home") })
                         }
                         composable("historical") {
                             HistoricalScreen(
@@ -99,7 +101,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 demoGame,
                                 onBackClick = { navController.navigate("home") },
-                                onEndClick = { navController.navigate("home") })
+                                onEndClick = { _, _ -> navController.navigate("home") })
                         }
                     }
                 }

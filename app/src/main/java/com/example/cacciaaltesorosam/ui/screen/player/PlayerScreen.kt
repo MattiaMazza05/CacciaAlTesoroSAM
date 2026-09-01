@@ -15,13 +15,15 @@ enum class PlayerScreens { DeviceList, PlayerCustomization, InGame, GameEnd }
 @SuppressLint("MissingPermission")
 @Composable
 fun PlayerScreen(
-    modifier: Modifier
+    modifier: Modifier,
+    onHomeClick: () -> Unit
 ) {
     var currentPlayerScreen by remember { mutableStateOf(PlayerScreens.DeviceList) }
     var giocoRicevuto by remember { mutableStateOf<Game?>(null) }
     var nomePlayer by remember { mutableStateOf("") }
     var colorePlayer by remember { mutableStateOf(Color.White) }
     var tempoTrascorso by remember { mutableStateOf(0) }
+    var tesoroTrovato by remember { mutableStateOf(false) }
     when (currentPlayerScreen) {
         PlayerScreens.DeviceList -> DeviceList(modifier, onSelectClick = { gioco ->
             giocoRicevuto = gioco
@@ -52,9 +54,10 @@ fun PlayerScreen(
                     modifier,
                     gioco,
                     onBackClick = { currentPlayerScreen = PlayerScreens.DeviceList },
-                    onEndClick = { tempo ->
+                    onEndClick = { tempo, trovato ->
                         tempoTrascorso = tempo
                         currentPlayerScreen = PlayerScreens.GameEnd
+                        tesoroTrovato = trovato
                     }
                 )
             }
@@ -65,7 +68,9 @@ fun PlayerScreen(
                 modifier,
                 nomePlayer = nomePlayer,
                 colorePlayer = colorePlayer,
-                tempoTrascorso = tempoTrascorso
+                tempoTrascorso = tempoTrascorso,
+                tesoroTrovato = tesoroTrovato,
+                onHomeClick = onHomeClick
             )
         }
     }

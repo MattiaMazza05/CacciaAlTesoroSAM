@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.cacciaaltesorosam.data.Game
 import com.example.cacciaaltesorosam.data.ParseGame
+import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.master.GAME_SERVICE_UUID
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
@@ -43,6 +44,8 @@ import com.example.cacciaaltesorosam.ui.theme.PixelPanel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.DataInputStream
+import java.io.File
 import java.io.IOException
 
 
@@ -141,13 +144,23 @@ fun DeviceList(
                                     val socket =
                                         device.createRfcommSocketToServiceRecord(GAME_SERVICE_UUID)
                                     socket.connect()
-                                    val inputStream = socket.inputStream
-                                    val buffer = ByteArray(1024)
-                                    val numByteLetti = inputStream.read(buffer)
-                                    val jsonRicevuto = String(buffer, 0, numByteLetti)
-                                    Log.d("BLUETOOTH_RECEIVE", jsonRicevuto)
-                                    val gioco = ParseGame(jsonRicevuto)
-                                    onSelectClick(gioco)
+                                    val inputStream = DataInputStream(socket.inputStream)
+                                    val buffer = inputStream.readUTF()
+                                    Log.d("BLUETOOTH_RECEIVE", buffer)
+                                    val gioco = ParseGame(buffer)
+                                    val puntiAggiornati = mutableListOf<PuntoCaccia>()
+                                    gioco.punti.forEachIndexed { index, punto ->
+                                        val dimensione = inputStream.readInt()
+                                        val bytesAudio = ByteArray(dimensione)
+                                        inputStream.readFully(bytesAudio)
+                                        val file = File(context.filesDir, "punto_$index.m4a")
+                                        file.writeBytes(bytesAudio)
+                                        val puntoAggiornato =
+                                            punto.copy(audioPath = file.absolutePath)
+                                        puntiAggiornati.add(puntoAggiornato)
+                                    }
+                                    val giocoAggiornato = gioco.copy(punti = puntiAggiornati)
+                                    onSelectClick(giocoAggiornato)
                                 } catch (e: IOException) {
                                     Log.e("BLUETOOTH_RECEIVE", "Connessione fallita", e)
                                 }
