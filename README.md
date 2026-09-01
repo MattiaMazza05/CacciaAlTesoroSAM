@@ -45,6 +45,6 @@ app/src/main/java/com/example/cacciaaltesorosam/
 - [x] Schema database (Room) e persistenza di cacce e punti
 - [x] Registrazione e riproduzione audio degli indizi
 - [x] Geolocalizzazione dei punti in fase di creazione
-- [ ] Condivisione locale via Bluetooth (in corso)
-- [ ] Flusso di gioco lato player
-- [ ] Logica di prossimità durante il gioco
+- [x] Condivisione locale via Bluetooth
+- [x] Flusso di gioco lato player
+- [x] Logica di prossimità durante il gioco
