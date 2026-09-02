@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.cacciaaltesorosam.data.StatoConnessione
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelPanel
@@ -47,7 +48,9 @@ fun SendGammeViaBluetooth(
     modifier: Modifier,
     masterNick: String,
     gameJSON: String?,
-    audioPaths: List<String>
+    audioPaths: List<String>,
+    onWaitClick: () -> Unit,
+    onStatoChange: (StatoConnessione) -> Unit
 ) {
     val bta = BluetoothAdapter.getDefaultAdapter()
     val context = LocalContext.current
@@ -86,7 +89,12 @@ fun SendGammeViaBluetooth(
             text = "ATTENDI PLAYER",
             onClick = {
                 if (hasConnectPermission) {
-                    pairConnectionBluetooth(masterNick, bta, gameJSON, audioPaths)
+                    pairConnectionBluetooth(
+                        masterNick,
+                        bta,
+                        gameJSON,
+                        audioPaths
+                    ) { successo -> onStatoChange(if (successo) StatoConnessione.PRONTO else StatoConnessione.ATTESA) }
                 } else {
                     connectPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
                 }
@@ -95,6 +103,7 @@ fun SendGammeViaBluetooth(
                         putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120)
                     }
                 discoverableLauncher.launch(discoverableIntent)
+                onWaitClick()
             },
             backgroundColor = PixelPanel,
             shadowColor = PixelBorder,
@@ -109,7 +118,8 @@ fun pairConnectionBluetooth(
     masterNick: String,
     bta: BluetoothAdapter,
     gameJSON: String?,
-    audioPaths: List<String>
+    audioPaths: List<String>,
+    onResult: (Boolean) -> Unit
 ) {
     Log.d("BLUETOOTH_MASTER", "pairConnectionBluetooth chiamata")
     val masterUUID: UUID = GAME_SERVICE_UUID
@@ -127,8 +137,11 @@ fun pairConnectionBluetooth(
                 loop = false
                 null
             }
-            socket?.also {
+            if (socket != null) {
                 gameJSON?.let { string -> sendGame(it, string, audioPaths) }
+                onResult(true)
+            } else {
+                onResult(false)
             }
         }
     }

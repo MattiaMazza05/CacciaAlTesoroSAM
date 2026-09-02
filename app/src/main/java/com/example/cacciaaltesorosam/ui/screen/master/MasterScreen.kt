@@ -8,8 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.cacciaaltesorosam.data.PuntoCaccia
+import com.example.cacciaaltesorosam.data.StatoConnessione
 
-enum class MasterScreens { GameSettings, RecordPoint, Summary, SendGame }
+enum class MasterScreens { GameSettings, RecordPoint, Summary, SendGame, PlayerInteraction }
 
 @Composable
 fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
@@ -20,6 +21,7 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     var masterNick by remember { mutableStateOf("") }
     var gameJSON by remember { mutableStateOf("") }
     var audioPaths by remember { mutableStateOf(listOf<String>()) }
+    var statoConnessione by remember { mutableStateOf(StatoConnessione.ATTESA) }
     when (currentMasterScreen) {
         MasterScreens.GameSettings -> SettingScreen(
             modifier,
@@ -59,6 +61,17 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
             }
         )
 
-        MasterScreens.SendGame -> SendGammeViaBluetooth(modifier, masterNick, gameJSON, audioPaths)
+        MasterScreens.SendGame -> SendGammeViaBluetooth(
+            modifier,
+            masterNick,
+            gameJSON,
+            audioPaths,
+            onWaitClick = {
+                currentMasterScreen =
+                    MasterScreens.PlayerInteraction
+            },
+            onStatoChange = { stato -> statoConnessione = stato })
+
+        MasterScreens.PlayerInteraction -> PlayerInteraction(modifier, statoConnessione)
     }
 }
