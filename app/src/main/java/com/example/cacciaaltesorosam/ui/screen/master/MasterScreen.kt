@@ -1,5 +1,6 @@
 package com.example.cacciaaltesorosam.ui.screen.master
 
+import android.bluetooth.BluetoothAdapter
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.cacciaaltesorosam.data.PuntoCaccia
+import com.example.cacciaaltesorosam.data.RisultatoGame
 import com.example.cacciaaltesorosam.data.StatoConnessione
 
 enum class MasterScreens { GameSettings, RecordPoint, Summary, SendGame, PlayerInteraction }
@@ -22,6 +24,8 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     var gameJSON by remember { mutableStateOf("") }
     var audioPaths by remember { mutableStateOf(listOf<String>()) }
     var statoConnessione by remember { mutableStateOf(StatoConnessione.ATTESA) }
+    val bta = BluetoothAdapter.getDefaultAdapter()
+    var risultati by remember { mutableStateOf(listOf<RisultatoGame>()) }
     when (currentMasterScreen) {
         MasterScreens.GameSettings -> SettingScreen(
             modifier,
@@ -72,6 +76,16 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
             },
             onStatoChange = { stato -> statoConnessione = stato })
 
-        MasterScreens.PlayerInteraction -> PlayerInteraction(modifier, statoConnessione)
+        MasterScreens.PlayerInteraction -> PlayerInteraction(
+            modifier,
+            statoConnessione,
+            onRiceviClick = {
+                statoConnessione =
+                    StatoConnessione.RICEZIONE
+                pairPlayer(bta) { risultatoGame ->
+                    Log.d("RISULTATI_MASTER", "Ricevuto: $risultatoGame")
+                    risultati = risultati + risultatoGame
+                }
+            })
     }
 }

@@ -66,7 +66,9 @@ fun SendGammeViaBluetooth(
     ) { isGaranted ->
         hasConnectPermission = isGaranted
         if (isGaranted) {
-            pairConnectionBluetooth(masterNick, bta, gameJSON, audioPaths)
+            pairConnectionBluetooth(masterNick, bta, gameJSON, audioPaths) { successo ->
+                onStatoChange(if (successo) StatoConnessione.PRONTO else StatoConnessione.ATTESA)
+            }
         }
     }
     LaunchedEffect(Unit) {
@@ -138,7 +140,7 @@ fun pairConnectionBluetooth(
                 null
             }
             if (socket != null) {
-                gameJSON?.let { string -> sendGame(it, string, audioPaths) }
+                gameJSON?.let { string -> sendGame(socket, string, audioPaths) }
                 onResult(true)
             } else {
                 onResult(false)

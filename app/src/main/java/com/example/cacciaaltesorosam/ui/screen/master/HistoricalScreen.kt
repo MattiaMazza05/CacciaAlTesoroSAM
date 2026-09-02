@@ -44,7 +44,13 @@ fun HistoricalScreen(
         archivio = dao.getAllGames()
     }
     if (gameJSON != null) {
-        SendGammeViaBluetooth(modifier, selectedMasterNick, gameJSON, audioPaths)
+        SendGammeViaBluetooth(
+            modifier,
+            selectedMasterNick,
+            gameJSON,
+            audioPaths,
+            onWaitClick = {},
+            onStatoChange = {})
         return
     }
     Column(
