@@ -1,6 +1,7 @@
 package com.example.cacciaaltesorosam.ui.screen.player
 
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothDevice
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,8 +25,10 @@ fun PlayerScreen(
     var colorePlayer by remember { mutableStateOf(Color.White) }
     var tempoTrascorso by remember { mutableStateOf(0) }
     var tesoroTrovato by remember { mutableStateOf(false) }
+    var masterDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
     when (currentPlayerScreen) {
-        PlayerScreens.DeviceList -> DeviceList(modifier, onSelectClick = { gioco ->
+        PlayerScreens.DeviceList -> DeviceList(modifier, onSelectClick = { gioco, device ->
+            masterDevice = device
             giocoRicevuto = gioco
             currentPlayerScreen =
                 PlayerScreens.PlayerCustomization
@@ -70,7 +73,8 @@ fun PlayerScreen(
                 colorePlayer = colorePlayer,
                 tempoTrascorso = tempoTrascorso,
                 tesoroTrovato = tesoroTrovato,
-                onHomeClick = onHomeClick
+                onHomeClick = onHomeClick,
+                masterDevice = masterDevice
             )
         }
     }

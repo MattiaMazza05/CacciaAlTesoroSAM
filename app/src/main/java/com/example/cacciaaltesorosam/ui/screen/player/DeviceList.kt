@@ -52,7 +52,7 @@ import java.io.IOException
 @Composable
 fun DeviceList(
     modifier: Modifier,
-    onSelectClick: (Game) -> Unit
+    onSelectClick: (Game, BluetoothDevice) -> Unit
 ) {
     val bta = BluetoothAdapter.getDefaultAdapter()
     var foundDevices by remember { mutableStateOf(listOf<BluetoothDevice>()) }
@@ -160,7 +160,7 @@ fun DeviceList(
                                         puntiAggiornati.add(puntoAggiornato)
                                     }
                                     val giocoAggiornato = gioco.copy(punti = puntiAggiornati)
-                                    onSelectClick(giocoAggiornato)
+                                    onSelectClick(giocoAggiornato, device)
                                 } catch (e: IOException) {
                                     Log.e("BLUETOOTH_RECEIVE", "Connessione fallita", e)
                                 }
