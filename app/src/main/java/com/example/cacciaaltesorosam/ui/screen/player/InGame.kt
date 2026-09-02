@@ -70,6 +70,24 @@ fun InGame(
     val context = LocalContext.current
     val player = remember { AndroidAudioPlayer(context) }
     var partitaConclusa by remember { mutableStateOf(false) }
+    val minuti = secondiRimanenti / 60
+    val secondi = secondiRimanenti % 60
+    val tempoRimanete = "%02d:%02d".format(minuti, secondi)
+    val secondiTotali = game.duration * 60
+    val tempoTrascorso = secondiTotali - secondiRimanenti
+    val puntoCorrente = game.punti[tappaAttuale - 1]
+
+    val posizioneAttuale = getPlayerLocation(LocalContext.current)
+    // ! --- SOLO PER DEBUG --- !
+    val risultati = FloatArray(1)
+    Location.distanceBetween(
+        posizioneAttuale.latitude, posizioneAttuale.longitude,
+        puntoCorrente.latitude, puntoCorrente.longitude,
+        risultati
+    )
+    Log.d("PROXIMITY_DEBUG", "Distanza reale dal punto: ${risultati[0]} metri")
+    // ! --- --- !
+    val distanzaStato = calcolaDistanza(puntoCorrente)
 
     LaunchedEffect(Unit) {
         while (secondiRimanenti > 0) {
@@ -78,35 +96,16 @@ fun InGame(
         }
         partitaConclusa = true
     }
-    val minuti = secondiRimanenti / 60
-    val secondi = secondiRimanenti % 60
-    val tempoRimanete = "%02d:%02d".format(minuti, secondi)
-    val secondiTotali = game.duration * 60
-    val tempoTrascorso = secondiTotali - secondiRimanenti
-    val puntoCorrente = game.punti[tappaAttuale - 1]
-
-    getPlayerLocation(LocalContext.current)
-    val posizioneAttuale = getPlayerLocation(LocalContext.current)
-
-    val risultati = FloatArray(1)
-    Location.distanceBetween(
-        posizioneAttuale.latitude, posizioneAttuale.longitude,
-        puntoCorrente.latitude, puntoCorrente.longitude,
-        risultati
-    )
-    Log.d("PROXIMITY_DEBUG", "Distanza reale dal punto: ${risultati[0]} metri")
-
-    val distanzaStato = calcolaDistanza(puntoCorrente)
-
 
     LaunchedEffect(distanzaStato) {
         if (distanzaStato == DistanzaStato.PUNTO_TROVATO || distanzaStato == DistanzaStato.TESORO_TROVATO) {
             nextButton = true
         }
     }
+
     LaunchedEffect(partitaConclusa) {
         if (partitaConclusa) {
-            onEndClick(tempoTrascorso, partitaConclusa)
+            onEndClick(tempoTrascorso, distanzaStato == DistanzaStato.TESORO_TROVATO)
         }
     }
 
@@ -172,10 +171,14 @@ fun InGame(
                     shadowColor = PixelRedShadow
                 )
             }
-
             PixelButton(
                 text = "DEBUG: SALTA A FINE PARTITA",
-                onClick = { onEndClick(tempoTrascorso, partitaConclusa) },
+                onClick = {
+                    onEndClick(
+                        tempoTrascorso,
+                        distanzaStato == DistanzaStato.TESORO_TROVATO
+                    )
+                },
                 backgroundColor = PixelViolet,
                 shadowColor = PixelVioletShadow
             )
@@ -189,7 +192,7 @@ fun InGame(
                     nextButton = false
                 }
                 if (distanzaStato == DistanzaStato.TESORO_TROVATO) {
-                    onEndClick(tempoTrascorso, partitaConclusa)
+                    onEndClick(tempoTrascorso, distanzaStato == DistanzaStato.TESORO_TROVATO)
                 }
             },
             backgroundColor =

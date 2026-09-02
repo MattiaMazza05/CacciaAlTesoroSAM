@@ -1,5 +1,6 @@
 package com.example.cacciaaltesorosam.ui.screen.player
 
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,13 +26,13 @@ fun GameEnd(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         Text(
-            if (!tesoroTrovato) "COMPLIMENTI!" else "C'ERI QUASI!",
+            if (tesoroTrovato) "COMPLIMENTI!" else "C'ERI QUASI!",
             style = MaterialTheme.typography.titleLarge,
-            color = if (!tesoroTrovato) PixelYellow else PixelRed
+            color = if (tesoroTrovato) PixelYellow else PixelRed
         )
         Row {
             Text(nomePlayer, color = colorePlayer)
-            if (!tesoroTrovato) {
+            if (tesoroTrovato) {
                 Text(" hai completato la caccia in: ")
                 Text(
                     "%02d:%02d".format(tempoTrascorso / 60, tempoTrascorso % 60),
