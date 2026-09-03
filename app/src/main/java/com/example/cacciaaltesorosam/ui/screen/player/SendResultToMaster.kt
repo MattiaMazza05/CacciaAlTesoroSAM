@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import com.example.cacciaaltesorosam.data.toHex
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,6 +52,7 @@ fun sendResultToMaster(
             val resultJSON = jsonObject.toString()
             dataOut.writeUTF(resultJSON)
             dataOut.flush()
+            kotlinx.coroutines.delay(300)
             socketPlayer.close()
             onResult(true)
         } catch (e: IOException) {
@@ -61,7 +62,3 @@ fun sendResultToMaster(
     }
 }
 
-fun Color.toHex(): String {
-    val argb = this.toArgb()
-    return String.format("#%08X", argb)
-}

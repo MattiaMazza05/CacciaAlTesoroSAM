@@ -79,6 +79,7 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
         MasterScreens.PlayerInteraction -> PlayerInteraction(
             modifier,
             statoConnessione,
+            risultati = risultati,
             onRiceviClick = {
                 statoConnessione =
                     StatoConnessione.RICEZIONE

@@ -2,9 +2,14 @@ package com.example.cacciaaltesorosam.ui.screen.player
 
 
 import android.bluetooth.BluetoothDevice
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,10 +17,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
+import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
@@ -35,15 +44,26 @@ fun GameEnd(
     masterDevice: BluetoothDevice?
 ) {
     val context = LocalContext.current
-    Column(modifier = modifier.fillMaxSize()) {
-        var statoInvio by remember { mutableStateOf<Boolean?>(null) }
+    var statoInvio by remember { mutableStateOf<Boolean?>(null) }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Text(
             if (tesoroTrovato) "COMPLIMENTI!" else "C'ERI QUASI!",
+            modifier = Modifier,
             style = MaterialTheme.typography.titleLarge,
             color = if (tesoroTrovato) PixelYellow else PixelRed
         )
-        Row {
+        Spacer(Modifier.height(16.dp))
+        Row() {
             Text(nomePlayer, color = colorePlayer)
+        }
+        Row {
+
             if (tesoroTrovato) {
                 Text(" hai completato la caccia in: ")
                 Text(
@@ -54,8 +74,9 @@ fun GameEnd(
                 Text("Tempo scaduto, non hai trovato il tesoro")
             }
         }
-        //eventuale traccia gps
+        Spacer(Modifier.height(40.dp))
         PixelButton(
+            modifier = Modifier.fillMaxWidth(0.8f),
             text = "CONDIVIDI AL MASTER",
             onClick = {
                 val device = masterDevice
@@ -76,19 +97,40 @@ fun GameEnd(
             shadowColor = PixelYellowShadow
         )
 
+        Spacer(Modifier.height(12.dp))
+
         Row {
             when (statoInvio) {
-                true -> Text("Inviato al MAster con successo", color = PixelGreen)
+                true -> Text("Inviato al Master con successo", color = PixelGreen)
                 false -> Text("Errore, ripova", color = PixelRed)
                 null -> {}
             }
         }
         PixelButton(
-            "TORNA ALLA HOME",
+            modifier = Modifier.fillMaxWidth(0.8f),
+            text = "TORNA ALLA HOME",
             enabled = statoInvio == true,
             onClick = { onHomeClick() },
+            textColor = Color.White,
             backgroundColor = if (statoInvio == true) PixelGreen else PixelPanel,
             shadowColor = if (statoInvio == true) PixelGreenShadow else PixelBorder
+        )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun GameEndPreview() {
+    CacciaAlTesoroSAMTheme {
+        GameEnd(
+            modifier = Modifier,
+            tempoTrascorso = 185,
+            nomePlayer = "Mattia",
+            colorePlayer = PixelGreen,
+            tesoroTrovato = true,
+            onHomeClick = {},
+            masterDevice = null
         )
     }
 }

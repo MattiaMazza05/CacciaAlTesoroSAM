@@ -67,7 +67,7 @@ fun SendGammeViaBluetooth(
         hasConnectPermission = isGaranted
         if (isGaranted) {
             pairConnectionBluetooth(masterNick, bta, gameJSON, audioPaths) { successo ->
-                onStatoChange(if (successo) StatoConnessione.PRONTO else StatoConnessione.ATTESA)
+                onStatoChange(if (successo) StatoConnessione.ATTESA else StatoConnessione.PRONTO)
             }
         }
     }
@@ -88,15 +88,16 @@ fun SendGammeViaBluetooth(
         )
         Spacer(modifier.height(30.dp))
         PixelButton(
-            text = "ATTENDI PLAYER",
+            text = "TRASMETTI PARTITA",
             onClick = {
+                onStatoChange(StatoConnessione.PRONTO)
                 if (hasConnectPermission) {
                     pairConnectionBluetooth(
                         masterNick,
                         bta,
                         gameJSON,
                         audioPaths
-                    ) { successo -> onStatoChange(if (successo) StatoConnessione.PRONTO else StatoConnessione.ATTESA) }
+                    ) { successo -> onStatoChange(if (successo) StatoConnessione.ATTESA else StatoConnessione.PRONTO) }
                 } else {
                     connectPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
                 }
