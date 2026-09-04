@@ -17,11 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +32,8 @@ import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.player.RESULT_SERVICE_UUID
 import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBlue
+import com.example.cacciaaltesorosam.ui.theme.PixelBlueShadow
+import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelPanel
 import com.example.cacciaaltesorosam.ui.theme.PixelRed
@@ -49,7 +51,8 @@ fun PlayerInteraction(
     modifier: Modifier,
     stato: StatoConnessione,
     onRiceviClick: () -> Unit,
-    risultati: List<RisultatoGame>
+    risultati: List<RisultatoGame>,
+    onBackClick: () -> Unit
 ) {
     Column(
         modifier
@@ -85,25 +88,37 @@ fun PlayerInteraction(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(risultati.sortedBy { it.tempoTrascorso }) { risultato ->
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .background(PixelPanel).padding(12.dp)){
-                Row {
-                    Text("${risultato.nomePlayer} - ", color = risultato.colorePlayer.toColor())
-                    Text("Tesoro: ")
-                    if (risultato.tesoroTrovato) {
-                        Text("TROVATO", color = PixelGreen)
-                    } else {
-                        Text("NON TROVATO", color = PixelRed)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(PixelPanel)
+                        .padding(12.dp)
+                ) {
+                    Row {
+                        Text("${risultato.nomePlayer} - ", color = risultato.colorePlayer.toColor())
+                        Text("Tesoro: ")
+                        if (risultato.tesoroTrovato) {
+                            Text("TROVATO", color = PixelGreen)
+                        } else {
+                            Text("NON TROVATO", color = PixelRed)
+                        }
                     }
-                }
-                Row {
-                    Text("TEMPO TRASCORSO: ")
-                    Text("${risultato.tempoTrascorso} sec", color = PixelBlue)
-                }
+                    Row {
+                        Text("TEMPO TRASCORSO: ")
+                        Text("${risultato.tempoTrascorso} sec", color = PixelBlue)
+                    }
                 }
             }
         }
+        Spacer(Modifier.height(16.dp))
+        PixelButton(
+            text = "TORNA ALLA HOME",
+            onClick = { onBackClick() },
+            backgroundColor = PixelBlue,
+            shadowColor = PixelBlueShadow,
+            textColor = Color.White,
+            modifier = Modifier.fillMaxWidth(0.8f)
+        )
     }
 }
 
@@ -174,7 +189,8 @@ fun PlayerInteractionPreview() {
             modifier = Modifier,
             stato = StatoConnessione.RICEZIONE,
             risultati = risultatiFinti,
-            onRiceviClick = {}
+            onRiceviClick = {},
+            onBackClick = {}
         )
     }
 }

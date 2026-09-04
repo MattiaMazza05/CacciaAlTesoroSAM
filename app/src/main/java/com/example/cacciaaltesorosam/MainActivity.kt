@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "home") {
                         composable("home") {
-                            hello(
+                            Hello(
                                 modifier = Modifier.padding(innerPadding),
                                 onMasterClick = { navController.navigate("master") },
                                 onPlayerClick = { navController.navigate("player") },
@@ -111,7 +113,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun hello(
+fun Hello(
     modifier: Modifier,
     onMasterClick: () -> Unit,
     onPlayerClick: () -> Unit,
@@ -120,7 +122,8 @@ fun hello(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -128,15 +131,23 @@ fun hello(
             Text(
                 "CACCIA AL TESORO",
                 style = MaterialTheme.typography.titleLarge,
-                color = PixelYellow
+                color = PixelYellow,
+                textAlign = TextAlign.Center
             )
         }
-        Spacer(Modifier.heightIn(40.dp))
+        Spacer(Modifier.heightIn(8.dp))
+        Text(
+            "Prepara una caccia o unisciti a una già in corso",
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.heightIn(48.dp))
         PixelButton(
             text = "CREA PARTITA",
             onClick = onMasterClick,
             backgroundColor = PixelYellow,
-            shadowColor = PixelYellowShadow
+            shadowColor = PixelYellowShadow,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
         Spacer(Modifier.heightIn(14.dp))
         PixelButton(
@@ -144,7 +155,8 @@ fun hello(
             onClick = onHistoricalClick,
             backgroundColor = PixelPanel,
             textColor = Color.White,
-            shadowColor = PixelBorder
+            shadowColor = PixelBorder,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
         Spacer(Modifier.height(14.dp))
         PixelButton(
@@ -152,7 +164,8 @@ fun hello(
             onClick = onPlayerClick,
             backgroundColor = PixelPanel,
             textColor = Color.White,
-            shadowColor = PixelBorder
+            shadowColor = PixelBorder,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
         Spacer(Modifier.height(14.dp))
         PixelButton(
@@ -160,7 +173,8 @@ fun hello(
             onClick = onDemoClick,
             backgroundColor = PixelPanel,
             textColor = Color.White,
-            shadowColor = PixelBorder
+            shadowColor = PixelBorder,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
     }
 }

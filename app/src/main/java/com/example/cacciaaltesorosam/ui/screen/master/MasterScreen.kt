@@ -80,6 +80,7 @@ fun MasterScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
             modifier,
             statoConnessione,
             risultati = risultati,
+            onBackClick = onBackClick,
             onRiceviClick = {
                 statoConnessione =
                     StatoConnessione.RICEZIONE

@@ -15,6 +15,7 @@ appcompat = "1.7.1"
 playServicesLocation = "21.4.0"
 locationbuttonCompose = "1.0.0-alpha01"
 navigationCompose = "2.9.8"
+uiText = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 androidx-locationbutton-compose = { group = "androidx.core.locationbutton", name = "locationbutton-compose", version.ref = "locationbuttonCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
