@@ -50,8 +50,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onMasterClick = { navController.navigate("master") },
                                 onPlayerClick = { navController.navigate("player") },
-                                onHistoricalClick = { navController.navigate("historical") },
-                                onDemoClick = { navController.navigate("playerDemo") }
+                                onHistoricalClick = { navController.navigate("historical") }
                             )
                         }
                         composable("master") {
@@ -83,7 +82,6 @@ fun Hello(
     onMasterClick: () -> Unit,
     onPlayerClick: () -> Unit,
     onHistoricalClick: () -> Unit,
-    onDemoClick: () -> Unit
 ) {
     Column(
         modifier = modifier

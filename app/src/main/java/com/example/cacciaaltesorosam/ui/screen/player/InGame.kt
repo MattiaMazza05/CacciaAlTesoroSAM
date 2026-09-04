@@ -276,11 +276,11 @@ fun calcolaDistanza(puntoCorrente: PuntoCaccia): DistanzaStato {
         )
 
         try {
-            lm.addProximityAlert(puntoCorrente.latitude, puntoCorrente.longitude, 50f, -1, piVicino)
+            lm.addProximityAlert(puntoCorrente.latitude, puntoCorrente.longitude, 25f, -1, piVicino)
             lm.addProximityAlert(
                 puntoCorrente.latitude,
                 puntoCorrente.longitude,
-                35f,
+                10f,
                 -1,
                 piTrovato
             )
