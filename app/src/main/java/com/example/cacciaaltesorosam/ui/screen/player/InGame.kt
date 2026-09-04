@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -77,16 +76,7 @@ fun InGame(
     val tempoTrascorso = secondiTotali - secondiRimanenti
     val puntoCorrente = game.punti[tappaAttuale - 1]
 
-    val posizioneAttuale = getPlayerLocation(LocalContext.current)
-    // ! --- SOLO PER DEBUG --- !
-    val risultati = FloatArray(1)
-    Location.distanceBetween(
-        posizioneAttuale.latitude, posizioneAttuale.longitude,
-        puntoCorrente.latitude, puntoCorrente.longitude,
-        risultati
-    )
-    Log.d("PROXIMITY_DEBUG", "Distanza reale dal punto: ${risultati[0]} metri")
-    // ! --- --- !
+    getPlayerLocation(LocalContext.current)
     val distanzaStato = calcolaDistanza(puntoCorrente)
 
     LaunchedEffect(Unit) {
@@ -171,17 +161,6 @@ fun InGame(
                     shadowColor = PixelRedShadow
                 )
             }
-            PixelButton(
-                text = "DEBUG: SALTA A FINE PARTITA",
-                onClick = {
-                    onEndClick(
-                        tempoTrascorso,
-                        distanzaStato == DistanzaStato.TESORO_TROVATO
-                    )
-                },
-                backgroundColor = PixelViolet,
-                shadowColor = PixelVioletShadow
-            )
         }
         PixelButton(
             if (distanzaStato == DistanzaStato.TESORO_TROVATO) "CONCLUDI PARTITA" else "VAI AL PROSSIMO INDIZIO",

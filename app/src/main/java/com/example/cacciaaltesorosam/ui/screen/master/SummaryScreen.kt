@@ -209,23 +209,3 @@ fun saveGame(
         Log.d("DB_LOCATION_TEST", puntiSalvati.toString())
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun SummaryScreenPreview() {
-    CacciaAlTesoroSAMTheme {
-        SummaryScreen(
-            modifier = Modifier,
-            punti = listOf(
-                PuntoCaccia("path1", false, 43.71021, 10.38762),
-                PuntoCaccia("path2", false, 43.71105, 10.38820),
-                PuntoCaccia("path3", true, 43.71200, 10.38900)
-            ),
-            gameName = "Caccia di Prova",
-            duration = 30,
-            masterNick = "Mattia",
-            onBackClick = {},
-            onSendClick = { _, _ -> }
-        )
-    }
-}

@@ -77,17 +77,6 @@ fun SettingScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 PixelButton(
-                    text = "TEST",
-                    onClick = {
-                        gameDuration = 1
-                        isClicked = 0
-                    },
-                    backgroundColor = if (isClicked == 1) PixelYellow else PixelPanel,
-                    textColor = if (isClicked == 1) Color.Black else Color.White,
-                    shadowColor = if (isClicked == 1) PixelYellowShadow else PixelBorder,
-                    modifier = Modifier.weight(1f)
-                )
-                PixelButton(
                     text = "30m",
                     onClick = {
                         gameDuration = 30
@@ -135,17 +124,5 @@ fun SettingScreen(
                 shadowColor = PixelYellowShadow
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SettingScreenPreview() {
-    CacciaAlTesoroSAMTheme {
-        SettingScreen(
-            modifier = Modifier,
-            onBackClick = {},
-            onSettingConfirmed = { _, _, _ -> }
-        )
     }
 }

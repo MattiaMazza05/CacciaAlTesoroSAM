@@ -25,12 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.cacciaaltesorosam.data.Game
-import com.example.cacciaaltesorosam.data.PuntoCaccia
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.master.HistoricalScreen
 import com.example.cacciaaltesorosam.ui.screen.master.MasterScreen
-import com.example.cacciaaltesorosam.ui.screen.player.InGame
 import com.example.cacciaaltesorosam.ui.screen.player.PlayerScreen
 import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
@@ -46,31 +43,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             CacciaAlTesoroSAMTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val demoGame = Game(
-                        gameName = "Caccia di Prova",
-                        duration = 1,
-                        masterNick = "Mattia",
-                        punti = listOf(
-                            PuntoCaccia(
-                                audioPath = "0",
-                                isTreasure = false,
-                                latitude = 43.7102122,
-                                longitude = 10.3876207
-                            ),
-                            PuntoCaccia(
-                                audioPath = "1",
-                                isTreasure = false,
-                                latitude = 43.7102122,
-                                longitude = 10.3876207
-                            ),
-                            PuntoCaccia(
-                                audioPath = "2",
-                                isTreasure = true,
-                                latitude = 43.7102122,
-                                longitude = 10.3876207
-                            )
-                        )
-                    )
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "home") {
                         composable("home") {
@@ -97,13 +69,6 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onBackClick = { navController.navigate("home") }
                             )
-                        }
-                        composable("playerDemo") {
-                            InGame(
-                                modifier = Modifier.padding(innerPadding),
-                                demoGame,
-                                onBackClick = { navController.navigate("home") },
-                                onEndClick = { _, _ -> navController.navigate("home") })
                         }
                     }
                 }
@@ -162,15 +127,6 @@ fun Hello(
         PixelButton(
             text = "UNISCITI A UNA PARTITA",
             onClick = onPlayerClick,
-            backgroundColor = PixelPanel,
-            textColor = Color.White,
-            shadowColor = PixelBorder,
-            modifier = Modifier.fillMaxWidth(0.8f)
-        )
-        Spacer(Modifier.height(14.dp))
-        PixelButton(
-            text = "PARTITA DEMO",
-            onClick = onDemoClick,
             backgroundColor = PixelPanel,
             textColor = Color.White,
             shadowColor = PixelBorder,

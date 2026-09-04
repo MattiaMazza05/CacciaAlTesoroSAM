@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.cacciaaltesorosam.data.Coordinate
@@ -37,7 +34,6 @@ import com.example.cacciaaltesorosam.media.record.AndroidAudioRecorder
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
 import com.example.cacciaaltesorosam.ui.screen.common.PixelTopBar
 import com.example.cacciaaltesorosam.ui.screen.common.rememberLocationTracker
-import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
@@ -105,11 +101,14 @@ fun MasterRecordScreen(
         masterCoord == null -> PixelRed
         else -> PixelGreen
     }
-    Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            PixelTopBar(title = "CREA PUNTI E INDIZI", onBackClick = onMasterBackClick)
+    Column(Modifier
+        .fillMaxSize()
+        .statusBarsPadding()) {
+        PixelTopBar(title = "CREA PUNTI E INDIZI", onBackClick = onMasterBackClick)
         Column(
             modifier = modifier
-                .fillMaxWidth().padding(24.dp),
+                .fillMaxWidth()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
 
             )
@@ -257,17 +256,5 @@ fun MasterRecordScreen(
             )
 
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MasterRecordScreenPreview() {
-    CacciaAlTesoroSAMTheme {
-        MasterRecordScreen(
-            onPointConfirmed = {},
-            pointNumber = 2,
-            onMasterBackClick = {}
-        )
     }
 }

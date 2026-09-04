@@ -159,38 +159,3 @@ fun pairPlayer(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PlayerInteractionPreview() {
-    val risultatiFinti = listOf(
-        RisultatoGame(
-            nomePlayer = "Mattia",
-            colorePlayer = "#FF43A047", // verde
-            tempoTrascorso = 245,
-            tesoroTrovato = true
-        ),
-        RisultatoGame(
-            nomePlayer = "Luca",
-            colorePlayer = "#FFE53935", // rosso
-            tempoTrascorso = 312,
-            tesoroTrovato = true
-        ),
-        RisultatoGame(
-            nomePlayer = "Giulia",
-            colorePlayer = "#FF1E88E5", // blu
-            tempoTrascorso = 600,
-            tesoroTrovato = false
-        )
-    )
-
-    CacciaAlTesoroSAMTheme {
-        PlayerInteraction(
-            modifier = Modifier,
-            stato = StatoConnessione.RICEZIONE,
-            risultati = risultatiFinti,
-            onRiceviClick = {},
-            onBackClick = {}
-        )
-    }
-}

@@ -21,10 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cacciaaltesorosam.ui.screen.common.PixelButton
-import com.example.cacciaaltesorosam.ui.theme.CacciaAlTesoroSAMTheme
 import com.example.cacciaaltesorosam.ui.theme.PixelBorder
 import com.example.cacciaaltesorosam.ui.theme.PixelGreen
 import com.example.cacciaaltesorosam.ui.theme.PixelGreenShadow
@@ -59,7 +57,7 @@ fun GameEnd(
             color = if (tesoroTrovato) PixelYellow else PixelRed
         )
         Spacer(Modifier.height(16.dp))
-        Row() {
+        Row {
             Text(nomePlayer, color = colorePlayer)
         }
         Row {
@@ -114,23 +112,6 @@ fun GameEnd(
             textColor = Color.White,
             backgroundColor = if (statoInvio == true) PixelGreen else PixelPanel,
             shadowColor = if (statoInvio == true) PixelGreenShadow else PixelBorder
-        )
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GameEndPreview() {
-    CacciaAlTesoroSAMTheme {
-        GameEnd(
-            modifier = Modifier,
-            tempoTrascorso = 185,
-            nomePlayer = "Mattia",
-            colorePlayer = PixelGreen,
-            tesoroTrovato = true,
-            onHomeClick = {},
-            masterDevice = null
         )
     }
 }
