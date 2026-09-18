@@ -40,11 +40,4 @@ app/src/main/java/com/example/cacciaaltesorosam/
 └── MainActivity.kt
 ```
 
-## Stato di sviluppo
-
-- [x] Schema database (Room) e persistenza di cacce e punti
-- [x] Registrazione e riproduzione audio degli indizi
-- [x] Geolocalizzazione dei punti in fase di creazione
-- [x] Condivisione locale via Bluetooth
-- [x] Flusso di gioco lato player
-- [x] Logica di prossimità durante il gioco
+## APP FINITA
