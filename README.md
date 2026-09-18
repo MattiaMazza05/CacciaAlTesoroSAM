@@ -41,3 +41,10 @@ app/src/main/java/com/example/cacciaaltesorosam/
 ```
 
 ## APP FINITA
+
+## License
+Copyright © 2026 Mattia Mazza. All rights reserved.
+
+This project is publicly available for viewing and educational/portfolio
+purposes only. The source code may not be copied, modified, redistributed,
+or used in other projects without prior written permission.
